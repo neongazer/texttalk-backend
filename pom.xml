@@ -123,5 +123,11 @@
             <artifactId>logback-access</artifactId>
             <version>${logback.version}</version>
         </dependency>
+        <dependency>
+            <groupId>org.apache.storm</groupId>
+            <artifactId>storm</artifactId>
+            <version>0.9.1-incubating</version>
+        </dependency>
+
     </dependencies>
 </project>
