@@ -9,6 +9,7 @@ import org.slf4j.LoggerFactory;
 
 import static org.testng.Assert.*;
 
+@Test
 public class TextProcessorTest {
 
     private final static Logger logger = LoggerFactory.getLogger(TextProcessorTest.class);
