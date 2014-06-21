@@ -1,6 +1,8 @@
 package com.texttalk.commons.command;
 
+import java.io.BufferedInputStream;
 import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
 import java.util.Calendar;
 import org.apache.commons.exec.OS;
 import org.slf4j.Logger;
@@ -58,7 +60,13 @@ public class CommandExecutorTest {
     public void testCommand() {
 
         logger.debug("Executing: " + returnCmd);
-        String output = new CommandExecutor().execute(returnCmd).toString();
+
+        String output = new CommandExecutor()
+                .setOutputStream(new ByteArrayOutputStream())
+                .execute(returnCmd)
+                .getOutputStream()
+                .toString();
+
         assertTrue(output.toLowerCase().contains("from 127.0.0.1"), "Should execute ping successfully to ping once localhost");
     }
 
@@ -112,10 +120,15 @@ public class CommandExecutorTest {
 
         String testText = "hello world!";
         logger.debug("Executing: " + stdInCmd);
-        CommandExecutor exec = new CommandExecutor().setInputStream(
-                new ByteArrayInputStream(new String(testText).getBytes("UTF-8"))
-        );
-        String output = exec.execute(stdInCmd).toString();
+
+        String output = new CommandExecutor()
+                .setInputStream(
+                        new BufferedInputStream(new ByteArrayInputStream(new String(testText).getBytes("UTF-8")))
+                )
+                .setOutputStream(new ByteArrayOutputStream())
+                .execute(stdInCmd)
+                .getOutputStream()
+                .toString();;
 
         logger.debug("Command line reversed text: " + output);
 

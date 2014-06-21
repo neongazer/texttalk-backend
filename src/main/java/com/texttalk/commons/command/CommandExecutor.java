@@ -4,8 +4,7 @@ import org.apache.commons.exec.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.io.ByteArrayInputStream;
-import java.io.ByteArrayOutputStream;
+import java.io.*;
 import java.util.Calendar;
 
 /**
@@ -17,26 +16,27 @@ public class CommandExecutor {
 
     private final int defaultTimeoutSecs = 10;
 
-    private ByteArrayInputStream stdin = null;
+    private InputStream stdin = null;
 
-    public ByteArrayOutputStream execute(String executeMainCommandIn) throws CommandException {
+    private OutputStream stdout = null;
+
+    public CommandExecutor execute(String executeMainCommandIn) throws CommandException {
 
         return execute(executeMainCommandIn, defaultTimeoutSecs, null, null);
     }
 
-    public ByteArrayOutputStream execute(String executeMainCommandIn, Integer timeout) throws CommandException {
+    public CommandExecutor execute(String executeMainCommandIn, Integer timeout) throws CommandException {
 
         return execute(executeMainCommandIn, timeout, null, null);
     }
 
-    public ByteArrayOutputStream execute(String executeMainCommandIn, Integer timeout, Integer expectedExitValue) throws CommandException {
+    public CommandExecutor execute(String executeMainCommandIn, Integer timeout, Integer expectedExitValue) throws CommandException {
 
         return execute(executeMainCommandIn, timeout, expectedExitValue, null);
     }
 
-    public ByteArrayOutputStream execute(String executeMainCommandIn, Integer timeout, Integer expectedExitValue, String executeAfterExceptionMainCommand) throws CommandException {
+    public CommandExecutor execute(String executeMainCommandIn, Integer timeout, Integer expectedExitValue, String executeAfterExceptionMainCommand) throws CommandException {
 
-        ByteArrayOutputStream stdout = new ByteArrayOutputStream();
         ExecuteWatchdog watchdog = null;
 
         try {
@@ -47,14 +47,7 @@ public class CommandExecutor {
                 executor.setExitValue(expectedExitValue);
             }
 
-            // set process output
-            stdout = new ByteArrayOutputStream();
-
-            if(stdin != null) {
-                executor.setStreamHandler(new PumpStreamHandler(stdout, null, stdin));
-            } else {
-                executor.setStreamHandler(new PumpStreamHandler(stdout));
-            }
+            executor.setStreamHandler(new PumpStreamHandler(stdout, null, stdin));
 
             watchdog = new CommandWatchdog(timeout, executeAfterExceptionMainCommand);
             executor.setWatchdog(watchdog);
@@ -71,15 +64,12 @@ public class CommandExecutor {
 
         } catch (CommandException e) {
             logger.error("Command: " + executeMainCommandIn);
-            logger.error("Command output: " + stdout);
             throw e;
         } catch (CommandTimeoutException e) {
             logger.error("Command: " + executeMainCommandIn);
-            logger.error("Command output: " + stdout);
             throw e;
         } catch (Exception e) {
             logger.error("Command: " + executeMainCommandIn);
-            logger.error("Command output: " + stdout);
             // check if the cause of this exception was because of time out or watchdog killed the actual command
             if(watchdog != null) {
                 try {
@@ -93,16 +83,25 @@ public class CommandExecutor {
             resetInputStream();
         }
 
-        return stdout;
+        return this;
     }
 
-    public CommandExecutor setInputStream(ByteArrayInputStream in) {
+    public CommandExecutor setInputStream(InputStream in) {
         stdin = in;
         return this;
     }
 
-    public ByteArrayInputStream getInputStream() {
+    public CommandExecutor setOutputStream(OutputStream out) {
+        stdout = out;
+        return this;
+    }
+
+    public InputStream getInputStream() {
         return stdin;
+    }
+
+    public OutputStream getOutputStream() {
+        return stdout;
     }
 
     private void resetInputStream() {
