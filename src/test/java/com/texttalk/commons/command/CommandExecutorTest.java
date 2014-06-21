@@ -1,5 +1,6 @@
 package com.texttalk.commons.command;
 
+import java.io.ByteArrayInputStream;
 import java.util.Calendar;
 import org.apache.commons.exec.OS;
 import org.slf4j.Logger;
@@ -7,6 +8,8 @@ import org.slf4j.LoggerFactory;
 import org.testng.annotations.Test;
 import org.testng.annotations.AfterMethod;
 import org.testng.annotations.BeforeMethod;
+
+import static org.testng.Assert.assertEquals;
 import static org.testng.Assert.assertTrue;
 
 public class CommandExecutorTest {
@@ -17,6 +20,7 @@ public class CommandExecutorTest {
     private String returnCmd;
     private String killDelayedCmd;
     private String listProcsCmd;
+    private String stdInCmd;
 
     @BeforeMethod
     public void setUp() throws Exception {
@@ -26,21 +30,23 @@ public class CommandExecutorTest {
             returnCmd = "/sbin/ping -c 1 127.0.0.1";
             killDelayedCmd = "/usr/bin/killall -v ping";
             listProcsCmd = "/bin/ps ax";
+            stdInCmd = "/usr/bin/rev";
         } else if (OS.isFamilyUnix()) { // Debian, Ubuntu
             delayCmd = "/bin/ping 127.0.0.1 -c 5";
             returnCmd = "/bin/ping 127.0.0.1 -c 1";
             killDelayedCmd = "/usr/bin/killall -v ping";
             listProcsCmd = "/bin/ps ax";
+            stdInCmd = "/usr/bin/rev";
         } else if (OS.isFamilyWindows()) { // Windows 7+, Windows Server 2008+
             delayCmd = "C:/Windows/System32/PING.EXE -n 5 127.0.0.1";
             returnCmd = "C:/Windows/System32/PING.EXE -n 1 127.0.0.1";
-            //returnCmd = "mshta \"javascript:alert('Bravo. Looks like its working! Wait for timeout to occur...');close();\"";
             killDelayedCmd = "C:/Windows/System32/taskkill.exe /IM PING.EXE /F";
             listProcsCmd = "C:/Windows/System32/tasklist.exe";
+            // TODO: find rev alternative in windows or figure out better test for stdin
+            stdInCmd = "";
         } else {
             throw new RuntimeException("OS is not supported!");
         }
-
     }
 
     @AfterMethod
@@ -99,5 +105,24 @@ public class CommandExecutorTest {
     public void testInvalidCommand() throws CommandException {
         // Should throw CommandException
         new CommandExecutor().execute("blablah");
+    }
+
+    @Test
+    public void testCommandWithStdIn() throws Exception {
+
+        String testText = "hello world!";
+        logger.debug("Executing: " + stdInCmd);
+        CommandExecutor exec = new CommandExecutor().setInputStream(
+                new ByteArrayInputStream(new String(testText).getBytes("UTF-8"))
+        );
+        String output = exec.execute(stdInCmd).toString();
+
+        logger.debug("Command line reversed text: " + output);
+
+        assertEquals(
+                output.trim(),
+                new StringBuilder(testText).reverse().toString(),
+                "Should accept text via input stream and reverse it"
+        );
     }
 }

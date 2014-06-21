@@ -3,6 +3,8 @@ package com.texttalk.commons.command;
 import org.apache.commons.exec.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.util.Calendar;
 
@@ -14,6 +16,8 @@ public class CommandExecutor {
     private final static Logger logger = LoggerFactory.getLogger(CommandExecutor.class);
 
     private final int defaultTimeoutSecs = 10;
+
+    private ByteArrayInputStream stdin = null;
 
     public ByteArrayOutputStream execute(String executeMainCommandIn) throws CommandException {
 
@@ -45,8 +49,12 @@ public class CommandExecutor {
 
             // set process output
             stdout = new ByteArrayOutputStream();
-            PumpStreamHandler psh = new PumpStreamHandler(stdout);
-            executor.setStreamHandler(psh);
+
+            if(stdin != null) {
+                executor.setStreamHandler(new PumpStreamHandler(stdout, null, stdin));
+            } else {
+                executor.setStreamHandler(new PumpStreamHandler(stdout));
+            }
 
             watchdog = new CommandWatchdog(timeout, executeAfterExceptionMainCommand);
             executor.setWatchdog(watchdog);
@@ -81,8 +89,23 @@ public class CommandExecutor {
                 }
             }
             throw new CommandException(e);
+        } finally {
+            resetInputStream();
         }
 
         return stdout;
+    }
+
+    public CommandExecutor setInputStream(ByteArrayInputStream in) {
+        stdin = in;
+        return this;
+    }
+
+    public ByteArrayInputStream getInputStream() {
+        return stdin;
+    }
+
+    private void resetInputStream() {
+        stdin = null;
     }
 }
