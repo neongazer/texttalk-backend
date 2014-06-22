@@ -35,6 +35,9 @@ public class MP3LameEncoder extends ProcessorBase implements Processor {
         String input = "-";
         String output = "-";
 
+        // check if input is provided or throw exception
+        ensureInputIsProvided();
+
         if(isInputFileSet()) {
             input = inputFile.getAbsolutePath();
         }

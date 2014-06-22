@@ -62,4 +62,11 @@ public class ProcessorBase<T> {
 
         return (outputFile != null);
     }
+
+    public void ensureInputIsProvided() throws IOException {
+
+        if(!isInputStreamSet() && !isInputFileSet()) {
+            throw new IOException("Input stream or file is not provided");
+        }
+    }
 }

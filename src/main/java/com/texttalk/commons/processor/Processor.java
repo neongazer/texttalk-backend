@@ -7,7 +7,7 @@ import java.io.OutputStream;
 
 /**
  * Created by Andrew on 22/06/2014.
- * This is a base interface used by encoders, synthesizors, transcribers or any other stream/file producer/consumer
+ * This is a base interface used by encoders, synthesizors, transcribers or any other stream/file producers or consumers
  */
 public interface Processor<T> {
 
@@ -22,6 +22,8 @@ public interface Processor<T> {
 
     boolean isInputFileSet() throws IOException;
     boolean isOutputFileSet() throws IOException;
+
+    void ensureInputIsProvided() throws IOException;
 
     Processor<T> process() throws IOException;
 }
