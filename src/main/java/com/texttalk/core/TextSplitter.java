@@ -10,7 +10,7 @@ package com.texttalk.core;
 import java.util.ArrayList;
 import java.util.List;
 
-public class TextProcessor {
+public class TextSplitter {
 
     private static final String WORD_SEPARATOR = " ";
 
