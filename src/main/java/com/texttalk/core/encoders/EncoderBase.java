@@ -1,21 +1,18 @@
 package com.texttalk.core.encoders;
 
-import java.io.BufferedInputStream;
-import java.io.BufferedOutputStream;
-import java.io.File;
-import java.io.IOException;
+import java.io.*;
 
 /**
  * Created by Andrew on 21/06/2014.
  */
 public class EncoderBase<T> {
 
-    protected BufferedInputStream inputStream;
-    protected File inputFile;
-    protected BufferedOutputStream outputStream;
-    protected File outputFile;
+    protected InputStream inputStream = null;
+    protected File inputFile = null;
+    protected OutputStream outputStream = null;
+    protected File outputFile = null;
 
-    public Encoder<T> setInputStream(BufferedInputStream stream) {
+    public Encoder<T> setInputStream(InputStream stream) {
 
         inputStream = stream;
 
@@ -29,7 +26,7 @@ public class EncoderBase<T> {
         return (Encoder<T>)this;
     }
 
-    public Encoder<T> setOutputStream(BufferedOutputStream stream) {
+    public Encoder<T> setOutputStream(OutputStream stream) {
 
         outputStream = stream;
 
@@ -51,5 +48,15 @@ public class EncoderBase<T> {
     public boolean isOutputStreamSet() throws IOException {
 
         return (outputStream != null);
+    }
+
+    public boolean isInputFileSet() throws IOException {
+
+        return (inputFile != null);
+    }
+
+    public boolean isOutputFileSet() throws IOException {
+
+        return (outputFile != null);
     }
 }

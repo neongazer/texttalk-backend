@@ -7,10 +7,10 @@ import java.io.*;
  */
 interface Encoder<T> {
 
-    Encoder<T> setInputStream(BufferedInputStream stream);
+    Encoder<T> setInputStream(InputStream stream);
     Encoder<T> setInputFile(File file);
 
-    Encoder<T> setOutputStream(BufferedOutputStream stream);
+    Encoder<T> setOutputStream(OutputStream stream);
     Encoder<T> setOutputFile(File file);
 
     boolean isInputStreamSet() throws IOException;

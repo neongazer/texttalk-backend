@@ -14,76 +14,48 @@ public class CommandExecutor {
 
     private final static Logger logger = LoggerFactory.getLogger(CommandExecutor.class);
 
-    private final int defaultTimeoutSecs = 10;
+    private int timeoutSecs = 10;
+
+    private Integer expectedExitValue = null;
+
+    private String executeAfterExceptionMainCommand = null;
 
     private InputStream stdin = null;
 
     private OutputStream stdout = null;
 
-    public CommandExecutor execute(String executeMainCommandIn) throws CommandException {
-
-        return execute(executeMainCommandIn, defaultTimeoutSecs, null, null);
+    public OutputStream getErrorStream() {
+        return error;
     }
 
-    public CommandExecutor execute(String executeMainCommandIn, Integer timeout) throws CommandException {
-
-        return execute(executeMainCommandIn, timeout, null, null);
+    public void setErrorStream(OutputStream error) {
+        this.error = error;
     }
 
-    public CommandExecutor execute(String executeMainCommandIn, Integer timeout, Integer expectedExitValue) throws CommandException {
+    private OutputStream error = null;
 
-        return execute(executeMainCommandIn, timeout, expectedExitValue, null);
+    public Integer getExpectedExitValue() {
+        return expectedExitValue;
     }
 
-    public CommandExecutor execute(String executeMainCommandIn, Integer timeout, Integer expectedExitValue, String executeAfterExceptionMainCommand) throws CommandException {
+    public void setExpectedExitValue(Integer expectedExitValue) {
+        this.expectedExitValue = expectedExitValue;
+    }
 
-        ExecuteWatchdog watchdog = null;
+    public String getExecuteAfterExceptionCommand() {
+        return executeAfterExceptionMainCommand;
+    }
 
-        try {
-            CommandLine commandLine = CommandLine.parse(executeMainCommandIn);
-            DefaultExecutor executor = new DefaultExecutor();
+    public void setExecuteAfterExceptionCommand(String executeAfterExceptionMainCommand) {
+        this.executeAfterExceptionMainCommand = executeAfterExceptionMainCommand;
+    }
 
-            if(expectedExitValue != null) {
-                executor.setExitValue(expectedExitValue);
-            }
+    public int getTimeoutSecs() {
+        return timeoutSecs;
+    }
 
-            executor.setStreamHandler(new PumpStreamHandler(stdout, null, stdin));
-
-            watchdog = new CommandWatchdog(timeout, executeAfterExceptionMainCommand);
-            executor.setWatchdog(watchdog);
-            executor.setProcessDestroyer(new ShutdownHookProcessDestroyer());
-
-            Calendar startTime = Calendar.getInstance();
-
-            executor.execute(commandLine);
-
-            Calendar nowTime = Calendar.getInstance();
-            Long commandTimeDiff = (nowTime.getTimeInMillis() - startTime.getTimeInMillis()) / 1000;
-
-            logger.debug("It took {} seconds to perform the command", commandTimeDiff.toString());
-
-        } catch (CommandException e) {
-            logger.error("Command: " + executeMainCommandIn);
-            throw e;
-        } catch (CommandTimeoutException e) {
-            logger.error("Command: " + executeMainCommandIn);
-            throw e;
-        } catch (Exception e) {
-            logger.error("Command: " + executeMainCommandIn);
-            // check if the cause of this exception was because of time out or watchdog killed the actual command
-            if(watchdog != null) {
-                try {
-                    watchdog.checkException();
-                } catch(Exception wExp) {
-                    throw new CommandTimeoutException(e);
-                }
-            }
-            throw new CommandException(e);
-        } finally {
-            resetInputStream();
-        }
-
-        return this;
+    public void setTimeoutSecs(int timeoutSecs) {
+        this.timeoutSecs = timeoutSecs;
     }
 
     public CommandExecutor setInputStream(InputStream in) {
@@ -106,5 +78,86 @@ public class CommandExecutor {
 
     private void resetInputStream() {
         stdin = null;
+    }
+
+    private void resetOutputStream() {
+        stdin = null;
+    }
+
+    private void resetErrorStream() {
+        error = null;
+    }
+
+    public CommandExecutor execute(String executeMainCommandIn) throws CommandException {
+
+        return execute(executeMainCommandIn, timeoutSecs, expectedExitValue, executeAfterExceptionMainCommand);
+    }
+
+    public CommandExecutor execute(String executeMainCommandIn, Integer timeout) throws CommandException {
+
+        return execute(executeMainCommandIn, timeout, expectedExitValue, executeAfterExceptionMainCommand);
+    }
+
+    public CommandExecutor execute(String executeMainCommandIn, Integer timeout, Integer expectedExitValue) throws CommandException {
+
+        return execute(executeMainCommandIn, timeout, expectedExitValue, executeAfterExceptionMainCommand);
+    }
+
+    public CommandExecutor execute(String executeMainCommandIn, Integer timeout, Integer expectedExitValue, String executeAfterExceptionMainCommand) throws CommandException {
+
+        ExecuteWatchdog watchdog = null;
+
+        try {
+            CommandLine commandLine = CommandLine.parse(executeMainCommandIn);
+            DefaultExecutor executor = new DefaultExecutor();
+
+            if(expectedExitValue != null) {
+                executor.setExitValue(expectedExitValue);
+            }
+
+            if(error == null) {
+                error = new ByteArrayOutputStream();
+            }
+
+            executor.setStreamHandler(new PumpStreamHandler(stdout, error, stdin));
+
+            watchdog = new CommandWatchdog(timeout, executeAfterExceptionMainCommand);
+            executor.setWatchdog(watchdog);
+            executor.setProcessDestroyer(new ShutdownHookProcessDestroyer());
+
+            Calendar startTime = Calendar.getInstance();
+
+            executor.execute(commandLine);
+
+            Calendar nowTime = Calendar.getInstance();
+            Long commandTimeDiff = (nowTime.getTimeInMillis() - startTime.getTimeInMillis()) / 1000;
+
+            logger.debug("It took {} seconds to perform the command", commandTimeDiff.toString());
+
+        } catch (CommandException e) {
+            logger.error("Command: " + executeMainCommandIn);
+            logger.error("Error: " + error.toString());
+            throw e;
+        } catch (CommandTimeoutException e) {
+            logger.error("Command: " + executeMainCommandIn);
+            logger.error("Error: " + error.toString());
+            throw e;
+        } catch (Exception e) {
+            logger.error("Command: " + executeMainCommandIn);
+            logger.error("Error: " + error.toString());
+            // check if the cause of this exception was because of time out or watchdog killed the actual command
+            if(watchdog != null) {
+                try {
+                    watchdog.checkException();
+                } catch(Exception wExp) {
+                    throw new CommandTimeoutException(e);
+                }
+            }
+            throw new CommandException(e);
+        } finally {
+            resetInputStream();
+        }
+
+        return this;
     }
 }
