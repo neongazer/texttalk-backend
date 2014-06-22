@@ -1,14 +1,12 @@
 package com.texttalk.core.encoders;
 
-import com.google.common.io.ByteStreams;
 import com.texttalk.commons.command.CommandExecutor;
+import com.texttalk.commons.processor.Processor;
+import com.texttalk.commons.processor.ProcessorBase;
 
-import java.io.BufferedOutputStream;
-import java.io.FileOutputStream;
 import java.io.IOException;
-import java.io.OutputStream;
 
-public class MP3LameEncoder extends EncoderBase implements Encoder {
+public class MP3LameEncoder extends ProcessorBase implements Processor {
 
     private String lameEncoderCmd = "lame -r -m m --resample 22 -b 32";
     private CommandExecutor cmd = new CommandExecutor();

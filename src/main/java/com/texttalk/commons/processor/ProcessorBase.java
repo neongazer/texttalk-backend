@@ -1,43 +1,46 @@
-package com.texttalk.core.encoders;
+package com.texttalk.commons.processor;
 
-import java.io.*;
+import java.io.File;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
 
 /**
- * Created by Andrew on 21/06/2014.
+ * Created by Andrew on 22/06/2014.
  */
-public class EncoderBase<T> {
+public class ProcessorBase<T> {
 
     protected InputStream inputStream = null;
     protected File inputFile = null;
     protected OutputStream outputStream = null;
     protected File outputFile = null;
 
-    public Encoder<T> setInputStream(InputStream stream) {
+    public Processor<T> setInputStream(InputStream stream) {
 
         inputStream = stream;
 
-        return (Encoder<T>)this;
+        return (Processor<T>)this;
     }
 
-    public Encoder<T> setInputFile(File file) {
+    public Processor<T> setInputFile(File file) {
 
         inputFile = file;
 
-        return (Encoder<T>)this;
+        return (Processor<T>)this;
     }
 
-    public Encoder<T> setOutputStream(OutputStream stream) {
+    public Processor<T> setOutputStream(OutputStream stream) {
 
         outputStream = stream;
 
-        return (Encoder<T>)this;
+        return (Processor<T>)this;
     }
 
-    public Encoder<T> setOutputFile(File file) {
+    public Processor<T> setOutputFile(File file) {
 
         outputFile = file;
 
-        return (Encoder<T>)this;
+        return (Processor<T>)this;
     }
 
     public boolean isInputStreamSet() throws IOException {
