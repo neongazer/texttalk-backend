@@ -1,0 +1,38 @@
+#!/usr/bin/perl
+
+use strict;
+use warnings;
+use Cwd 'abs_path';
+use File::Basename;
+use File::Copy;
+
+my $argsNum = @ARGV;
+my $input_src = $ARGV[0];
+my $input_res = $ARGV[1];
+my $src = "";
+my $res = "";
+my $currentDir = dirname(abs_path($0));
+
+open FILE, "$currentDir/samples/sample1.mp3" or die "Couldn't open file: $!";
+while (<FILE>){
+    $res .= $_;
+}
+close FILE;
+
+if( $input_src eq "-") {
+    while (<STDIN>) {
+        $src .= $_;
+    }
+} else {
+    open FILE, $input_src or die "Couldn't open file: $!";
+    while (<FILE>){
+        $src .= $_;
+    }
+    close FILE;
+}
+
+if($input_res eq "-") {
+    print $res;
+} else {
+    copy("$currentDir/samples/sample1.mp3", $input_res);
+}

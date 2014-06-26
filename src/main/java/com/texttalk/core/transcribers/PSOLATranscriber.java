@@ -30,6 +30,11 @@ public class PSOLATranscriber extends ProcessorBase implements Processor {
         return tone;
     }
 
+    public PSOLATranscriber setCmd(CommandExecutor cmd) {
+        this.cmd = cmd;
+        return this;
+    }
+
     public PSOLATranscriber setTone(int tone) {
         this.tone = tone;
         return this;

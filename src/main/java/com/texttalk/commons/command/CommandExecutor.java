@@ -28,8 +28,9 @@ public class CommandExecutor {
         return error;
     }
 
-    public void setErrorStream(OutputStream error) {
+    public CommandExecutor setErrorStream(OutputStream error) {
         this.error = error;
+        return this;
     }
 
     private OutputStream error = null;
@@ -38,24 +39,27 @@ public class CommandExecutor {
         return expectedExitValue;
     }
 
-    public void setExpectedExitValue(Integer expectedExitValue) {
+    public CommandExecutor setExpectedExitValue(Integer expectedExitValue) {
         this.expectedExitValue = expectedExitValue;
+        return this;
     }
 
     public String getExecuteAfterExceptionCommand() {
         return executeAfterExceptionMainCommand;
     }
 
-    public void setExecuteAfterExceptionCommand(String executeAfterExceptionMainCommand) {
+    public CommandExecutor setExecuteAfterExceptionCommand(String executeAfterExceptionMainCommand) {
         this.executeAfterExceptionMainCommand = executeAfterExceptionMainCommand;
+        return this;
     }
 
     public int getTimeoutSecs() {
         return timeoutSecs;
     }
 
-    public void setTimeoutSecs(int timeoutSecs) {
+    public CommandExecutor setTimeoutSecs(int timeoutSecs) {
         this.timeoutSecs = timeoutSecs;
+        return this;
     }
 
     public CommandExecutor setInputStream(InputStream in) {

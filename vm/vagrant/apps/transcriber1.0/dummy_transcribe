@@ -1,0 +1,64 @@
+#!/usr/bin/perl
+
+use strict;
+use warnings;
+
+my $argsNum = @ARGV;
+my $input_size = $ARGV[0];
+my $input_speed = $ARGV[1];
+my $input_tone = $ARGV[2];
+my $input_src = $ARGV[3];
+my $input_res = $ARGV[4];
+my $src = "";
+my $res = "_ 100 0 90
+t' 90 33 93 67 103
+E 69 14 127 58 132
+s 94 76 103
+t 76 36 101
+a 59 19 114
+s' 98 0 109 33 101
+;
+v' 56
+Ie 160 55 119
+n 77 36 113
+a 72
+z 70 41 96
+;
+d 64 14 96
+U 80 31 119 81 117
+;
+t' 78 45 109
+r' 59 46 115
+iI 126 30 110
+s' 98 0 111
+;
+t' 78 31 94
+E 69 52 106
+s 94
+t 76 17 87
+a 89 19 97
+s 136 6 83
+_ 100 100 80
+";
+
+if( $input_src eq "-") {
+    while (<STDIN>) {
+        $src .= $_;
+    }
+} elsif ($argsNum == 6 && $ARGV[5] eq "+") {
+    $src = $input_src;
+} else {
+    open FILE, $input_src or die "Couldn't open file: $!";
+    while (<FILE>){
+        $src .= $_;
+    }
+    close FILE;
+}
+
+if($input_res eq "+" || $input_res eq "-") {
+    print $res;
+} else {
+    open (OUTPUT_FILE, ">".$input_res);
+    print OUTPUT_FILE $res;
+    close (OUTPUT_FILE);
+}
