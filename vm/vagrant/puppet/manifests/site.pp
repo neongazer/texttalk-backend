@@ -16,6 +16,18 @@ class must-have {
       ensure	=> present,
       require	=> Exec["apt-get"],
   }
+
+  host { 'storm':
+    ip => '127.0.0.1',
+  }
+
+  host { 'nimbus':
+    ip => '127.0.0.1',
+  }
+
+  host { 'zookeeper':
+    ip => '127.0.0.1',
+  }
 }
 
 include must-have
