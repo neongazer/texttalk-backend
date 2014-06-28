@@ -1,0 +1,11 @@
+---
+:backends: - yaml
+
+:yaml:
+   :datadir: "%{settings::manifestdir}/hieradata"
+
+:logger: console
+
+:hierarchy: - %{env}
+            - %{::environment}
+            - common
