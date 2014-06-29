@@ -1,7 +1,4 @@
 class zookeeper {
-	$jdk = hiera('jdk.vendor')
-	
-	include $jdk
 	
 	package { 'zookeeper':
 		ensure => "3.3.5*",
