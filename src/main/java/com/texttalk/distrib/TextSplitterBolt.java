@@ -22,7 +22,9 @@ public class TextSplitterBolt extends BaseRichBolt {
     private int maxTextLength = 50;
 
     public void prepare(Map config, TopologyContext context, OutputCollector collector) {
+
         this.collector = collector;
+        maxTextLength = ((Long)config.get("splitTextLength")).intValue();
     }
 
     public void execute(Tuple tuple) {

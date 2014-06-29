@@ -17,6 +17,11 @@ class must-have {
       require	=> Exec["apt-get"],
   }
 
+  package { "lame":
+    ensure	=> present,
+    require	=> Exec["apt-get"],
+  }
+
   host { 'storm':
     ip => '127.0.0.1',
   }

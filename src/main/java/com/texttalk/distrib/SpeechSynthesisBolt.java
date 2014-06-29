@@ -14,9 +14,13 @@ import java.util.*;
 public class SpeechSynthesisBolt extends BaseRichBolt {
 
     private HashMap<String, String> transcriptions = null;
+    private String synthesizerPath = "";
+    private Integer timeout = 0;
 
     public void prepare(Map config, TopologyContext context, OutputCollector collector) {
         this.transcriptions = new HashMap<String, String>();
+        synthesizerPath = (String)config.get("synthesizers.psola.execPath");
+        timeout = ((Long)config.get("synthesizers.psola.timeout")).intValue();
     }
 
     public void execute(Tuple tuple) {

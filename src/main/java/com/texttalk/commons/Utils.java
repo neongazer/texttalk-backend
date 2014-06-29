@@ -1,5 +1,8 @@
 package com.texttalk.commons;
 
+import com.typesafe.config.Config;
+import com.typesafe.config.ConfigFactory;
+
 /**
  * Created by Andrew on 24/06/2014.
  */
@@ -17,5 +20,9 @@ public class Utils {
             Thread.sleep(milliseconds);
         } catch (InterruptedException e) {
         }
+    }
+
+    public static Config getConfig() {
+        return ConfigFactory.load();
     }
 }

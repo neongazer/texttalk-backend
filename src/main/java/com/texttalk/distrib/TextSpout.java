@@ -40,6 +40,6 @@ public class TextSpout extends BaseRichSpout {
         if (index >= texts.length) {
             index = 0;
         }
-        Utils.waitForMillis(3000);
+        Utils.waitForMillis(1000);
     }
 }

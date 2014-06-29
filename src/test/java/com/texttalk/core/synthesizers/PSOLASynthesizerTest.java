@@ -36,7 +36,7 @@ public class PSOLASynthesizerTest {
 
         BufferedInputStream in = new BufferedInputStream(new ByteArrayInputStream(new String("Any data, asdasdj hajshd jahsdkja").getBytes("UTF-8")));
         String resultFilePath = FilePath.getResourcePath(this.getClass().getClassLoader(), "temp/" + UUID.randomUUID().toString() + ".wav");
-        String dummySynthPath = FilePath.getResourcePath(this.getClass().getClassLoader(), "vm/vagrant/apps/synthesizer1.0/dummy_sint_psola", 2);
+        String dummySynthPath = FilePath.getResourcePath(this.getClass().getClassLoader(), "vm/vagrant/apps/psola_synthesizer/dummy_sint_psola", 2);
 
         assertFalse(new File(resultFilePath).exists(), "Output file should not exist");
 
@@ -58,7 +58,7 @@ public class PSOLASynthesizerTest {
 
         BufferedInputStream in = new BufferedInputStream(new ByteArrayInputStream(new String("Any data, asdasdj hajshd jahsdkja").getBytes("UTF-8")));
         ByteArrayOutputStream out = new ByteArrayOutputStream();
-        String dummySynthPath = FilePath.getResourcePath(this.getClass().getClassLoader(), "vm/vagrant/apps/synthesizer1.0/dummy_sint_psola", 2);
+        String dummySynthPath = FilePath.getResourcePath(this.getClass().getClassLoader(), "vm/vagrant/apps/psola_synthesizer/dummy_sint_psola", 2);
 
         assertEquals(out.size(), 0, "Output stream should be empty");
 
@@ -75,9 +75,9 @@ public class PSOLASynthesizerTest {
     @Test
     public void testFileInFileOut() throws Exception {
 
-        String inputFilePath = FilePath.getResourcePath(this.getClass().getClassLoader(), "vm/vagrant/apps/transcriber1.0/samples/sample1.pho", 2);
+        String inputFilePath = FilePath.getResourcePath(this.getClass().getClassLoader(), "vm/vagrant/apps/psola_transcriber/samples/sample1.pho", 2);
         String resultFilePath = FilePath.getResourcePath(this.getClass().getClassLoader(), "temp/" + UUID.randomUUID().toString() + ".wav");
-        String dummySynthPath = FilePath.getResourcePath(this.getClass().getClassLoader(), "vm/vagrant/apps/synthesizer1.0/dummy_sint_psola", 2);
+        String dummySynthPath = FilePath.getResourcePath(this.getClass().getClassLoader(), "vm/vagrant/apps/psola_synthesizer/dummy_sint_psola", 2);
 
         assertFalse(new File(resultFilePath).exists(), "Output file should not exist");
 
@@ -95,8 +95,8 @@ public class PSOLASynthesizerTest {
     @Test
     public void testFileInStreamOut() throws Exception {
 
-        String inputFilePath = FilePath.getResourcePath(this.getClass().getClassLoader(), "vm/vagrant/apps/transcriber1.0/samples/sample1.pho", 2);
-        String dummySynthPath = FilePath.getResourcePath(this.getClass().getClassLoader(), "vm/vagrant/apps/synthesizer1.0/dummy_sint_psola", 2);
+        String inputFilePath = FilePath.getResourcePath(this.getClass().getClassLoader(), "vm/vagrant/apps/psola_transcriber/samples/sample1.pho", 2);
+        String dummySynthPath = FilePath.getResourcePath(this.getClass().getClassLoader(), "vm/vagrant/apps/psola_synthesizer/dummy_sint_psola", 2);
         ByteArrayOutputStream out = new ByteArrayOutputStream();
 
         assertEquals(out.size(), 0, "Output stream should be empty");

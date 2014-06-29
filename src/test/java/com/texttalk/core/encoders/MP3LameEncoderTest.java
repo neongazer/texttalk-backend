@@ -1,5 +1,6 @@
 package com.texttalk.core.encoders;
 
+import com.texttalk.commons.Settings;
 import com.texttalk.commons.io.FilePath;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -18,23 +19,14 @@ import static org.testng.Assert.*;
 public class MP3LameEncoderTest {
 
     private final static Logger logger = LoggerFactory.getLogger(MP3LameEncoderTest.class);
-
-    @BeforeMethod
-    public void setUp() throws Exception {
-
-    }
-
-    @AfterMethod
-    public void tearDown() throws Exception {
-
-    }
+    private final static String encoderPath = "vm/vagrant/apps/lame_encoder/dummy_lame";
 
     @Test
     public void testStreamInFileOut() throws Exception {
 
         BufferedInputStream in = new BufferedInputStream(new ByteArrayInputStream(new String("Any data, asdasdj hajshd jahsdkja").getBytes("UTF-8")));
         String resultFilePath = FilePath.getResourcePath(this.getClass().getClassLoader(), "temp/" + UUID.randomUUID().toString() + ".mp3");
-        String dummyLamePath = FilePath.getResourcePath(this.getClass().getClassLoader(), "vm/vagrant/apps/encoder1.0/dummy_lame", 2);
+        String dummyLamePath = FilePath.getResourcePath(this.getClass().getClassLoader(), encoderPath, 2);
 
         assertFalse(new File(resultFilePath).exists(), "Output file should not exist");
 
@@ -56,7 +48,7 @@ public class MP3LameEncoderTest {
 
         BufferedInputStream in = new BufferedInputStream(new ByteArrayInputStream(new String("Any data, asdasdj hajshd jahsdkja").getBytes("UTF-8")));
         ByteArrayOutputStream out = new ByteArrayOutputStream();
-        String dummyLamePath = FilePath.getResourcePath(this.getClass().getClassLoader(), "vm/vagrant/apps/encoder1.0/dummy_lame", 2);
+        String dummyLamePath = FilePath.getResourcePath(this.getClass().getClassLoader(), encoderPath, 2);
 
         assertEquals(out.size(), 0, "Output stream should be empty");
 
@@ -73,9 +65,9 @@ public class MP3LameEncoderTest {
     @Test
     public void testFileInFileOut() throws Exception {
 
-        String inputFilePath = FilePath.getResourcePath(this.getClass().getClassLoader(), "vm/vagrant/apps/synthesizer1.0/samples/sample1.wav", 2);
+        String inputFilePath = FilePath.getResourcePath(this.getClass().getClassLoader(), "vm/vagrant/apps/psola_synthesizer/samples/sample1.wav", 2);
         String resultFilePath = FilePath.getResourcePath(this.getClass().getClassLoader(), "temp/" + UUID.randomUUID().toString() + ".mp3");
-        String dummyLamePath = FilePath.getResourcePath(this.getClass().getClassLoader(), "vm/vagrant/apps/encoder1.0/dummy_lame", 2);
+        String dummyLamePath = FilePath.getResourcePath(this.getClass().getClassLoader(), encoderPath, 2);
 
         assertFalse(new File(resultFilePath).exists(), "Output file should not exist");
 
@@ -93,8 +85,8 @@ public class MP3LameEncoderTest {
     @Test
     public void testFileInStreamOut() throws Exception {
 
-        String inputFilePath = FilePath.getResourcePath(this.getClass().getClassLoader(), "vm/vagrant/apps/synthesizer1.0/samples/sample1.wav", 2);
-        String dummyLamePath = FilePath.getResourcePath(this.getClass().getClassLoader(), "vm/vagrant/apps/encoder1.0/dummy_lame", 2);
+        String inputFilePath = FilePath.getResourcePath(this.getClass().getClassLoader(), "vm/vagrant/apps/psola_synthesizer/samples/sample1.wav", 2);
+        String dummyLamePath = FilePath.getResourcePath(this.getClass().getClassLoader(), encoderPath, 2);
         ByteArrayOutputStream out = new ByteArrayOutputStream();
 
         assertEquals(out.size(), 0, "Output stream should be empty");

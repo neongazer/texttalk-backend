@@ -21,10 +21,14 @@ import java.util.Map;
 public class TextTranscriptionBolt extends BaseRichBolt {
 
     private OutputCollector collector;
+    private String transcriberPath = "";
+    private Integer timeout = 0;
 
     public void prepare(Map config, TopologyContext context, OutputCollector collector) {
 
         this.collector = collector;
+        transcriberPath = (String)config.get("transcribers.psola.execPath");
+        timeout = ((Long)config.get("transcribers.psola.timeout")).intValue();
     }
 
     public void execute(Tuple tuple) {
@@ -37,14 +41,12 @@ public class TextTranscriptionBolt extends BaseRichBolt {
             ByteArrayInputStream in = new ByteArrayInputStream(textChunk.getBytes("UTF-8"));
             ByteArrayOutputStream out = new ByteArrayOutputStream();
             ByteArrayOutputStream error = new ByteArrayOutputStream();
-            // TODO: pass path through configuration or part of the actual tuple
-            String dummyTranscribPath = "/Users/Andrew/Documents/projects/text-talk.com/texttalk-backend/vm/vagrant/apps/transcriber1.0/dummy_transcribe";
 
             System.out.println("Input text" + in.available());
 
             new PSOLATranscriber()
-                    .setCmd(new CommandExecutor().setTimeoutSecs(5).setErrorStream(error))
-                    .setPSOLATranscribeCmd(dummyTranscribPath)
+                    .setCmd(new CommandExecutor().setTimeoutSecs(timeout).setErrorStream(error))
+                    .setPSOLATranscribeCmd(transcriberPath)
                     .setInputStream(in)
                     .setOutputStream(out)
                     .process();

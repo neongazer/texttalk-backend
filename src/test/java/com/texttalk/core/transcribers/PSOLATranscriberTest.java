@@ -41,7 +41,7 @@ public class PSOLATranscriberTest {
 
         BufferedInputStream in = new BufferedInputStream(new ByteArrayInputStream(new String("Testas 1 2 3 Testas").getBytes("UTF-8")));
         String resultFilePath = FilePath.getResourcePath(this.getClass().getClassLoader(), "temp/" + UUID.randomUUID().toString() + ".pho");
-        String dummyTranscribPath = FilePath.getResourcePath(this.getClass().getClassLoader(), "vm/vagrant/apps/transcriber1.0/dummy_transcribe", 2);
+        String dummyTranscribPath = FilePath.getResourcePath(this.getClass().getClassLoader(), "vm/vagrant/apps/psola_transcriber/dummy_transcribe", 2);
 
         assertFalse(new File(resultFilePath).exists(), "Output file should not exist");
 
@@ -63,7 +63,7 @@ public class PSOLATranscriberTest {
 
         BufferedInputStream in = new BufferedInputStream(new ByteArrayInputStream(new String("Testas 1 2 3 Testas").getBytes("UTF-8")));
         ByteArrayOutputStream out = new ByteArrayOutputStream();
-        String dummyTranscribPath = FilePath.getResourcePath(this.getClass().getClassLoader(), "vm/vagrant/apps/transcriber1.0/dummy_transcribe", 2);
+        String dummyTranscribPath = FilePath.getResourcePath(this.getClass().getClassLoader(), "vm/vagrant/apps/psola_transcriber/dummy_transcribe", 2);
 
         assertEquals(out.size(), 0, "Output stream should be empty");
 
@@ -80,9 +80,9 @@ public class PSOLATranscriberTest {
     @Test
     public void testFileInFileOut() throws Exception {
 
-        String inputFilePath = FilePath.getResourcePath(this.getClass().getClassLoader(), "vm/vagrant/apps/transcriber1.0/samples/sample1.txt", 2);
+        String inputFilePath = FilePath.getResourcePath(this.getClass().getClassLoader(), "vm/vagrant/apps/psola_transcriber/samples/sample1.txt", 2);
         String resultFilePath = FilePath.getResourcePath(this.getClass().getClassLoader(), "temp/" + UUID.randomUUID().toString() + ".pho");
-        String dummyTranscribPath = FilePath.getResourcePath(this.getClass().getClassLoader(), "vm/vagrant/apps/transcriber1.0/dummy_transcribe", 2);
+        String dummyTranscribPath = FilePath.getResourcePath(this.getClass().getClassLoader(), "vm/vagrant/apps/psola_transcriber/dummy_transcribe", 2);
 
         assertFalse(new File(resultFilePath).exists(), "Output file should not exist");
 
@@ -100,8 +100,8 @@ public class PSOLATranscriberTest {
     @Test
     public void testFileInStreamOut() throws Exception {
 
-        String inputFilePath = FilePath.getResourcePath(this.getClass().getClassLoader(), "vm/vagrant/apps/transcriber1.0/samples/sample1.txt", 2);
-        String dummyTranscribPath = FilePath.getResourcePath(this.getClass().getClassLoader(), "vm/vagrant/apps/transcriber1.0/dummy_transcribe", 2);
+        String inputFilePath = FilePath.getResourcePath(this.getClass().getClassLoader(), "vm/vagrant/apps/psola_transcriber/samples/sample1.txt", 2);
+        String dummyTranscribPath = FilePath.getResourcePath(this.getClass().getClassLoader(), "vm/vagrant/apps/psola_transcriber/dummy_transcribe", 2);
         ByteArrayOutputStream out = new ByteArrayOutputStream();
 
         assertEquals(out.size(), 0, "Output stream should be empty");
