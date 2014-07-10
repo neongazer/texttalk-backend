@@ -1,0 +1,5 @@
+30 //zodzio pozicijos sakinyje nesutapimo kaina
+10 //skiemens pozicijos nesutapimo zodyje kaina
+0.3 //jungimo kainos ties zodziu riba sumazejimo koeficientas
+0.6 //jungimo kainos ties skiemenu riba sumazejimo koeficientas
+1.0

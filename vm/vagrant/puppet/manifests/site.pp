@@ -6,32 +6,37 @@ define append_if_no_such_line($file, $line, $refreshonly = 'false') {
    }
 }
 
-include java7
-
 class must-have {
 
-  exec { "apt-get":
+  require java7
+
+  exec { "apt-get-update":
   	command	=> "/usr/bin/apt-get update",
   }
 
   package { "ia32-libs":
       ensure	=> present,
-      require	=> Exec["apt-get"],
+      require	=> Exec["apt-get-update"],
   }
 
   package { "lame":
     ensure	=> present,
-    require	=> Exec["apt-get"],
+    require	=> Exec["apt-get-update"],
+  }
+
+  package { "wget":
+    ensure	=> present,
+    require	=> Exec["apt-get-update"],
   }
 
   package { "mc":
     ensure	=> present,
-    require	=> Exec["apt-get"],
+    require	=> Exec["apt-get-update"],
   }
 
   package { "htop":
     ensure	=> present,
-    require	=> Exec["apt-get"],
+    require	=> Exec["apt-get-update"],
   }
 
   host { 'storm':
@@ -46,20 +51,20 @@ class must-have {
     ip => '127.0.0.1',
   }
 
-  host { 'kafka':
+  host { 'redis':
     ip => '127.0.0.1',
   }
 }
 
-include must-have
-hiera_include('classes')
-
-class { 'kafka::broker':
-  config => {
-    "broker.id" => "0",
-    "zookeeper.connect" => "zookeeper:2181",
-    "host.name" => "kafka",
-  },
-  install_java => false
+class hiera-classes {
+  require must-have
+  hiera_include('classes')
 }
 
+class install-all {
+
+  require hiera-classes
+  require redis
+}
+
+include install-all
