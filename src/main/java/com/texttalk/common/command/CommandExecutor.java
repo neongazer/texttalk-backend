@@ -136,8 +136,8 @@ public class CommandExecutor {
             Calendar nowTime = Calendar.getInstance();
             Long commandTimeDiff = (nowTime.getTimeInMillis() - startTime.getTimeInMillis()) / 1000;
 
-            logger.debug("Command: " + commandLine);
-            logger.debug("Time taken: " + commandTimeDiff.toString());
+            logger.info("Command: " + commandLine);
+            logger.info("Time taken: " + commandTimeDiff * 1000);
 
         } catch (CommandException e) {
             logger.error("Command: " + executeMainCommandIn);

@@ -39,6 +39,11 @@ class must-have {
     require	=> Exec["apt-get-update"],
   }
 
+  package { "sox":
+    ensure	=> present,
+    require	=> Exec["apt-get-update"],
+  }
+
   host { 'storm':
     ip => '127.0.0.1',
   }

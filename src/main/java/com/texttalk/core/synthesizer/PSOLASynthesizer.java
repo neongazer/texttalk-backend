@@ -1,9 +1,12 @@
 package com.texttalk.core.synthesizer;
 
 import com.google.common.io.ByteStreams;
+import com.texttalk.common.Utils;
 import com.texttalk.common.command.CommandExecutor;
 import com.texttalk.common.processor.Processor;
 import com.texttalk.common.processor.ProcessorBase;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
 
@@ -12,8 +15,10 @@ import java.io.IOException;
  */
 public class PSOLASynthesizer extends ProcessorBase implements Processor {
 
-    private String psolaSynthCmd = "/vagrant/apps/synthesizer1.0/sint_psola";
-    private String voiceDBPath = "/vagrant/apps/synthesizer1.0/PSOLADB.DAT";
+    private static Logger logger = LoggerFactory.getLogger(PSOLASynthesizer.class);
+
+    private String psolaSynthCmd = "/vagrant/apps/psola_synthesizer/sint_psola";
+    private String voiceDBPath = "/vagrant/apps/psola_synthesizer/PSOLADB.DAT";
     private CommandExecutor cmd = new CommandExecutor();
 
     public String getVoiceDBPath() {
@@ -50,6 +55,8 @@ public class PSOLASynthesizer extends ProcessorBase implements Processor {
         String input = "-";
         String output = "-";
 
+        logger.info("Running PSOLA Synthesizer...");
+
         // check if input is provided or throw exception
         ensureInputIsProvided();
 
@@ -61,7 +68,8 @@ public class PSOLASynthesizer extends ProcessorBase implements Processor {
         if(isInputStreamSet()) {
             cmd.setInputStream(inputStream);
             // TODO: Find more efficient way to determine the input size
-            inputSize = new Long(ByteStreams.toByteArray(inputStream).length);
+            //inputSize = new Long(ByteStreams.toByteArray(inputStream).length);
+            inputSize = 32768L;
         }
 
         if(isOutputFileSet()) {

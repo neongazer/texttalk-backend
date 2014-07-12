@@ -4,11 +4,12 @@ import com.texttalk.common.command.CommandExecutor;
 import com.texttalk.common.processor.Processor;
 import com.texttalk.common.processor.ProcessorBase;
 
+import java.io.FileOutputStream;
 import java.io.IOException;
 
 public class MP3LameEncoder extends ProcessorBase implements Processor {
 
-    private String lameEncoderCmd = "lame -r -m m --resample 22 -b 32";
+    private String lameEncoderCmd = "/vagrant/apps/lame_encoder/lame";
     private CommandExecutor cmd = new CommandExecutor();
 
     public CommandExecutor getCmd() {
@@ -43,7 +44,8 @@ public class MP3LameEncoder extends ProcessorBase implements Processor {
         }
 
         if(isOutputFileSet()) {
-            output = outputFile.getAbsolutePath();
+            output = "-";
+            cmd.setOutputStream(new FileOutputStream(outputFile));
         }
 
         if(isInputStreamSet()) {

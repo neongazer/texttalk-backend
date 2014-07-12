@@ -1,9 +1,13 @@
 package com.texttalk.core.transcriber;
 
 import com.google.common.io.ByteStreams;
+import com.texttalk.common.Utils;
 import com.texttalk.common.command.CommandExecutor;
 import com.texttalk.common.processor.Processor;
 import com.texttalk.common.processor.ProcessorBase;
+import org.apache.commons.io.IOUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
 
@@ -11,6 +15,8 @@ import java.io.IOException;
  * Created by Andrew on 22/06/2014.
  */
 public class PSOLATranscriber extends ProcessorBase implements Processor {
+
+    private static Logger logger = LoggerFactory.getLogger(PSOLATranscriber.class);
 
     private String psolaTranscribeCmd = "/vagrant/apps/transcriber1.0/transcribe";
     private int speed = 0;
@@ -56,6 +62,8 @@ public class PSOLATranscriber extends ProcessorBase implements Processor {
         String input = "-";
         String output = "-";
 
+        logger.info("Running PSOLA Transcriber...");
+
         // check if input is provided or throw exception
         ensureInputIsProvided();
 
@@ -65,9 +73,11 @@ public class PSOLATranscriber extends ProcessorBase implements Processor {
         }
 
         if(isInputStreamSet()) {
+
             cmd.setInputStream(inputStream);
             // TODO: Find more efficient way to determine the input size
-            inputSize = new Long(ByteStreams.toByteArray(inputStream).length) * 50; // each diphone consists of mutiple variables, on average ~20, so 50 per should be safe
+            //inputSize = new Long(ByteStreams.toByteArray(inputStream).length) * 50; // each diphone consists of mutiple variables, on average ~20, so 50 per should be safe
+            inputSize = 32768L;
         }
 
         if(isOutputFileSet()) {

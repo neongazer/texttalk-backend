@@ -10,6 +10,8 @@ import backtype.storm.tuple.Values;
 import com.texttalk.common.Utils;
 import com.texttalk.common.command.CommandExecutor;
 import com.texttalk.core.transcriber.PSOLATranscriber;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
@@ -19,6 +21,8 @@ import java.util.Map;
  * Created by Andrew on 16/06/2014.
  */
 public class TextTranscriptionBolt extends BaseRichBolt {
+
+    private static Logger logger = LoggerFactory.getLogger(TextTranscriptionBolt.class);
 
     private OutputCollector collector;
     private String transcriberPath = "";
@@ -37,13 +41,14 @@ public class TextTranscriptionBolt extends BaseRichBolt {
         String inputText = Utils.convertFromUTF8(textChunk, "Windows-1257");
         String transcribedText = "";
 
+        logger.info("Running Transcription bolt...");
+        logger.info("Input text: " + inputText);
+
         try {
 
             ByteArrayInputStream in = new ByteArrayInputStream(inputText.getBytes("Windows-1257"));
             ByteArrayOutputStream out = new ByteArrayOutputStream();
             ByteArrayOutputStream error = new ByteArrayOutputStream();
-
-            System.out.println("Input text" + in.available());
 
             new PSOLATranscriber()
                     .setCmd(new CommandExecutor().setTimeoutSecs(timeout).setErrorStream(error))
@@ -53,6 +58,8 @@ public class TextTranscriptionBolt extends BaseRichBolt {
                     .process();
 
             transcribedText = out.toString("UTF-8");
+
+            logger.info("Output text: " + transcribedText);
 
         } catch(Exception e) {
             // TODO: deal with exception

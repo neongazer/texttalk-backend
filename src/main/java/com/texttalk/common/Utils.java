@@ -1,7 +1,16 @@
 package com.texttalk.common;
 
+import com.google.common.base.Charsets;
+import com.google.common.io.CharStreams;
 import com.typesafe.config.Config;
 import com.typesafe.config.ConfigFactory;
+import org.apache.commons.io.IOUtils;
+import sun.nio.ch.IOUtil;
+
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.io.StringWriter;
+import java.util.stream.Stream;
 
 /**
  * Created by Andrew on 24/06/2014.
@@ -40,6 +49,11 @@ public class Utils {
             return null;
         }
         return out;
+    }
+
+    public static String convertInputStreamToString(InputStream inStream) {
+        java.util.Scanner s = new java.util.Scanner(inStream).useDelimiter("\\A");
+        return s.hasNext() ? s.next() : "";
     }
 
     public static Config getConfig() {

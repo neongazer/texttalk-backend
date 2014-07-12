@@ -12,6 +12,18 @@ public class UtilsTest {
     private final static Logger logger = LoggerFactory.getLogger(UtilsTest.class);
 
     @Test
+    public void testConvertFromAndToUTF8() throws Exception {
+
+        String originalText = "Labas, as krabas!";
+        String convertedText = Utils.convertFromUTF8(originalText, "Windows-1257");
+
+        logger.debug("Original text: " + originalText);
+        logger.debug("Converted text: " + convertedText);
+
+        assertEquals(Utils.convertToUTF8(convertedText, "Windows-1257"), originalText);
+    }
+
+    @Test
     public void testGetConfig() throws Exception {
 
         logger.debug(Utils.getConfig().getString("appPrefix"));
