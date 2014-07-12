@@ -46,7 +46,6 @@ public class SpeechSynthesisBolt extends BaseRichBolt {
         ByteArrayOutputStream error = new ByteArrayOutputStream();
 
         logger.info("Running Synthesis bolt...");
-        logger.info("Input text: " + transcribedText);
 
         try {
 

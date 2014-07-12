@@ -33,13 +33,13 @@ public class TextToSpeechTopology {
 
         builder.setSpout(TEXT_SPOUT_ID, queueSpout);
 
-        builder.setBolt(SPLIT_BOLT_ID, splitBolt).noneGrouping(TEXT_SPOUT_ID);
+        builder.setBolt(SPLIT_BOLT_ID, splitBolt, 2).setNumTasks(4).noneGrouping(TEXT_SPOUT_ID);
 
-        builder.setBolt(TRANSCRIPTION_BOLT_ID, transcriptionBolt).fieldsGrouping(SPLIT_BOLT_ID, new Fields("textChunk"));
+        builder.setBolt(TRANSCRIPTION_BOLT_ID, transcriptionBolt, 2).setNumTasks(2).fieldsGrouping(SPLIT_BOLT_ID, new Fields("textChunk"));
 
-        builder.setBolt(SYNTHESIS_BOLT_ID, synthesisBolt).globalGrouping(TRANSCRIPTION_BOLT_ID);
+        builder.setBolt(SYNTHESIS_BOLT_ID, synthesisBolt, 2).setNumTasks(2).globalGrouping(TRANSCRIPTION_BOLT_ID);
 
-        builder.setBolt(ENCODER_BOLT_ID, encoderBolt).globalGrouping(SYNTHESIS_BOLT_ID);
+        builder.setBolt(ENCODER_BOLT_ID, encoderBolt, 2).setNumTasks(4).globalGrouping(SYNTHESIS_BOLT_ID);
 
         if(args == null || args.length == 0) {
 

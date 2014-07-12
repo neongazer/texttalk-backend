@@ -42,7 +42,6 @@ public class TextTranscriptionBolt extends BaseRichBolt {
         String transcribedText = "";
 
         logger.info("Running Transcription bolt...");
-        logger.info("Input text: " + inputText);
 
         try {
 
@@ -58,8 +57,6 @@ public class TextTranscriptionBolt extends BaseRichBolt {
                     .process();
 
             transcribedText = out.toString("UTF-8");
-
-            logger.info("Output text: " + transcribedText);
 
         } catch(Exception e) {
             // TODO: deal with exception
