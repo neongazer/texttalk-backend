@@ -35,15 +35,13 @@ public class TextToSpeechTopology {
 
         builder.setSpout(TEXT_SPOUT_ID, queueSpout);
 
-        builder.setBolt(SPLIT_BOLT_ID, splitBolt, 2).setNumTasks(4).noneGrouping(TEXT_SPOUT_ID);
+        builder.setBolt(SPLIT_BOLT_ID, splitBolt, 2).setNumTasks(4).shuffleGrouping(TEXT_SPOUT_ID);
 
-        //builder.setBolt(TRANSCRIPTION_BOLT_ID, transcriptionBolt, 2).setNumTasks(2).fieldsGrouping(SPLIT_BOLT_ID, new Fields("textChunk"));
+        builder.setBolt(LUSS_SYNTHESIS_BOLT_ID, lussSynthesisBolt, 2).setNumTasks(2).shuffleGrouping(SPLIT_BOLT_ID, "luss");
 
-        //builder.setBolt(PSOLA_SYNTHESIS_BOLT_ID, psolaSynthesisBolt, 2).setNumTasks(2).globalGrouping(TRANSCRIPTION_BOLT_ID);
-
-        builder.setBolt(LUSS_SYNTHESIS_BOLT_ID, lussSynthesisBolt, 2).setNumTasks(2).globalGrouping(SPLIT_BOLT_ID);
-
-        //builder.setBolt(ENCODER_BOLT_ID, encoderBolt, 2).setNumTasks(4).globalGrouping(LUSS_SYNTHESIS_BOLT_ID);
+        builder.setBolt(TRANSCRIPTION_BOLT_ID, transcriptionBolt, 2).setNumTasks(2).shuffleGrouping(SPLIT_BOLT_ID, "psola");
+        builder.setBolt(PSOLA_SYNTHESIS_BOLT_ID, psolaSynthesisBolt, 2).setNumTasks(2).shuffleGrouping(TRANSCRIPTION_BOLT_ID, "psola");
+        builder.setBolt(ENCODER_BOLT_ID, encoderBolt, 2).setNumTasks(4).shuffleGrouping(PSOLA_SYNTHESIS_BOLT_ID, "psola");
 
         if(args == null || args.length == 0) {
 

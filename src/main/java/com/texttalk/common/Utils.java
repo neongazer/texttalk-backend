@@ -1,6 +1,7 @@
 package com.texttalk.common;
 
 import com.google.common.base.Charsets;
+import com.google.common.hash.Hashing;
 import com.google.common.io.CharStreams;
 import com.typesafe.config.Config;
 import com.typesafe.config.ConfigFactory;
@@ -54,6 +55,10 @@ public class Utils {
     public static String convertInputStreamToString(InputStream inStream) {
         java.util.Scanner s = new java.util.Scanner(inStream).useDelimiter("\\A");
         return s.hasNext() ? s.next() : "";
+    }
+
+    public static String getMD5(String str) {
+        return Hashing.md5().hashString(str, Charsets.UTF_8).toString();
     }
 
     public static Config getConfig() {

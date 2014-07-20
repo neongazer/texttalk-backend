@@ -9,14 +9,13 @@ import backtype.storm.tuple.Tuple;
 import backtype.storm.tuple.Values;
 import com.google.common.base.Charsets;
 import com.google.common.hash.Hashing;
-import com.texttalk.common.command.CommandExecutor;
+import com.texttalk.common.Utils;
+import com.texttalk.common.model.Message;
 import com.texttalk.core.synthesizer.LUSSSynthesizer;
-import com.texttalk.core.synthesizer.PSOLASynthesizer;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.ByteArrayInputStream;
-import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.util.*;
 
@@ -27,6 +26,7 @@ public class LUSSSynthesisBolt extends BaseRichBolt {
 
     private static Logger logger = LoggerFactory.getLogger(LUSSSynthesisBolt.class);
 
+    private int id = 0;
     private OutputCollector collector;
     private String synthesizerURL = "";
     private String synthesizerProtocol = "";
@@ -37,6 +37,7 @@ public class LUSSSynthesisBolt extends BaseRichBolt {
 
     public void prepare(Map config, TopologyContext context, OutputCollector collector) {
 
+        id = new Random().nextInt(1000);
         this.collector = collector;
         synthesizerURL = (String)config.get("synthesizers.luss.url");
         synthesizerProtocol = (String)config.get("synthesizers.luss.protocol");
@@ -49,17 +50,18 @@ public class LUSSSynthesisBolt extends BaseRichBolt {
 
     public void execute(Tuple tuple) {
 
-        String textChunk = tuple.getStringByField("textChunk");
-        String hashCode = Hashing.md5().hashString(textChunk, Charsets.UTF_8).toString();
-        String fileName = hashCode + ".mp3";
+        Message msg = Message.getMessage(tuple.getStringByField("textChunk"));
+
+        String fileName = msg.getHashCode() + ".mp3";
         File mp3File = new File(voicePath + "/" + fileName);
 
-        logger.info("Running LUSS Synthesis bolt...");
+        msg.setVoiceFile(mp3File.getAbsolutePath());
+
+        logger.info("Running LUSS Synthesis bolt on: " + id);
 
         try {
 
-            ByteArrayInputStream in = new ByteArrayInputStream(textChunk.getBytes("UTF-8"));
-
+            ByteArrayInputStream in = new ByteArrayInputStream(msg.getText().getBytes("UTF-8"));
             synthesizer.setInputStream(in).setOutputFile(mp3File).process();
 
         } catch(Exception e) {
@@ -67,10 +69,10 @@ public class LUSSSynthesisBolt extends BaseRichBolt {
             e.printStackTrace();
         }
 
-        this.collector.emit(new Values(hashCode, mp3File.getAbsoluteFile()));
+        this.collector.emit(new Values(Message.getJSON(msg)));
     }
 
     public void declareOutputFields(OutputFieldsDeclarer declarer) {
-        declarer.declare(new Fields("hashCode", "voicePath"));
+        //declarer.declare(new Fields("hashCode", "voicePath"));
     }
 }

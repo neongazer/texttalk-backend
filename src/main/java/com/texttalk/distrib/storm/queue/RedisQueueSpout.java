@@ -2,6 +2,9 @@ package com.texttalk.distrib.storm.queue;
 
 import java.util.List;
 import java.util.Map;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import redis.clients.jedis.Jedis;
 import backtype.storm.spout.SpoutOutputCollector;
 import backtype.storm.task.TopologyContext;
@@ -24,6 +27,8 @@ import backtype.storm.utils.Utils;
  * @date 28/11/2012
  */
 public class RedisQueueSpout extends BaseRichSpout {
+
+    private static Logger logger = LoggerFactory.getLogger(RedisQueueSpout.class);
 
     static final long            serialVersionUID = 737015318988609460L;
 
@@ -62,10 +67,8 @@ public class RedisQueueSpout extends BaseRichSpout {
         List<String> ret = this.jq.dequeue();
         if (ret == null) {
             Utils.sleep(5L);
-        }
-        else {
-            System.out.println(ret);
-
+        } else {
+            logger.debug("Got new message: " + ret.get(1));
             _collector.emit(new Values(ret.get(1)));
         }
     }
@@ -91,7 +94,8 @@ public class RedisQueueSpout extends BaseRichSpout {
      * @see backtype.storm.topology.IComponent#declareOutputFields(backtype.storm.topology.OutputFieldsDeclarer)
      */
     public void declareOutputFields(OutputFieldsDeclarer declarer) {
-        declarer.declare(new Fields("text"));
+
+        declarer.declare(new Fields("message"));
     }
 
 }

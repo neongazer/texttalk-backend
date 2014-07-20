@@ -8,6 +8,7 @@ import backtype.storm.tuple.Fields;
 import backtype.storm.tuple.Tuple;
 import backtype.storm.tuple.Values;
 import com.texttalk.common.command.CommandExecutor;
+import com.texttalk.common.model.Message;
 import com.texttalk.core.synthesizer.PSOLASynthesizer;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -37,9 +38,8 @@ public class PSOLASynthesisBolt extends BaseRichBolt {
     }
 
     public void execute(Tuple tuple) {
-        String textChunk = tuple.getStringByField("textChunk");
-        String transcribedText = tuple.getStringByField("transcribedText");
 
+        Message msg = Message.getMessage(tuple.getStringByField("transcribedText"));
 
         ByteArrayOutputStream out = new ByteArrayOutputStream();
         ByteArrayOutputStream error = new ByteArrayOutputStream();
@@ -48,7 +48,7 @@ public class PSOLASynthesisBolt extends BaseRichBolt {
 
         try {
 
-            ByteArrayInputStream in = new ByteArrayInputStream(transcribedText.getBytes("UTF-8"));
+            ByteArrayInputStream in = new ByteArrayInputStream(msg.getTranscript().getBytes("UTF-8"));
 
             new PSOLASynthesizer()
                     .setCmd(new CommandExecutor().setTimeoutSecs(timeout).setErrorStream(error))
@@ -63,11 +63,11 @@ public class PSOLASynthesisBolt extends BaseRichBolt {
             e.printStackTrace();
         }
 
-        this.collector.emit(new Values(textChunk, transcribedText, out.toByteArray()));
+        this.collector.emit(msg.getSynth(), new Values(Message.getJSON(msg), out.toByteArray()));
     }
 
     public void declareOutputFields(OutputFieldsDeclarer declarer) {
-        declarer.declare(new Fields("textChunk", "transcribedText", "voice"));
+        declarer.declareStream("psola", new Fields("transcribedText", "voice"));
     }
 
 

@@ -10,8 +10,11 @@ import backtype.storm.tuple.Values;
 import com.google.common.base.Charsets;
 import com.google.common.hash.Hashing;
 import com.texttalk.common.command.CommandExecutor;
+import com.texttalk.common.model.Message;
 import com.texttalk.core.encoder.MP3LameEncoder;
 import com.texttalk.core.transcriber.PSOLATranscriber;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
@@ -22,6 +25,8 @@ import java.util.Map;
  * Created by Andrew on 10/07/2014.
  */
 public class MP3EncoderBolt extends BaseRichBolt {
+
+    private static Logger logger = LoggerFactory.getLogger(MP3EncoderBolt.class);
 
     private OutputCollector collector;
     private String encoderPath = "";
@@ -38,10 +43,12 @@ public class MP3EncoderBolt extends BaseRichBolt {
 
     public void execute(Tuple tuple) {
 
+        Message msg = Message.getMessage(tuple.getStringByField("transcribedText"));
         byte[] voice = tuple.getBinaryByField("voice");
-        String textChunk = tuple.getStringByField("textChunk");
-        String fileName = Hashing.md5().hashString(textChunk, Charsets.UTF_8).toString() + ".mp3";
-        File mp3File = new File(voicePath + "/" + fileName);
+        File mp3File = new File(voicePath + "/" + msg.getHashCode() + ".mp3");
+        msg.setVoiceFile(mp3File.getAbsolutePath());
+
+        logger.info("Running MP3 Encoder bolt...");
 
         try {
 

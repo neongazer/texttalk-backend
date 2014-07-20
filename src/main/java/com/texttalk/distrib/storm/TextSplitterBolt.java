@@ -7,8 +7,14 @@ import backtype.storm.topology.base.BaseRichBolt;
 import backtype.storm.tuple.Fields;
 import backtype.storm.tuple.Tuple;
 import backtype.storm.tuple.Values;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.texttalk.common.Utils;
+import com.texttalk.common.model.Message;
 import com.texttalk.core.TextSplitter;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -16,6 +22,8 @@ import java.util.Map;
  * Created by Andrew on 24/06/2014.
  */
 public class TextSplitterBolt extends BaseRichBolt {
+
+    private static Logger logger = LoggerFactory.getLogger(TextSplitterBolt.class);
 
     private OutputCollector collector;
     // TODO: pass this value via configuration or include in the actual tuple
@@ -29,14 +37,22 @@ public class TextSplitterBolt extends BaseRichBolt {
 
     public void execute(Tuple tuple) {
 
-        List<String> splitText = TextSplitter.splitText( tuple.getStringByField("text"), maxTextLength );
+        Message msg = Message.getMessage(tuple.getStringByField("message"));
+
+        List<String> splitText = TextSplitter.splitText( msg.getText(), maxTextLength );
 
         for(String text : splitText){
-            this.collector.emit( new Values(text) );
+
+            Message newMsg = Message.getMessage(tuple.getStringByField("message"));
+            newMsg.setText(text);
+            newMsg.setHashCode(newMsg.computeHashCode());
+
+            this.collector.emit( newMsg.getSynth(), new Values(Message.getJSON(newMsg)) );
         }
     }
 
     public void declareOutputFields(OutputFieldsDeclarer declarer) {
-        declarer.declare(new Fields("textChunk"));
+        declarer.declareStream("psola", new Fields("textChunk"));
+        declarer.declareStream("luss", new Fields("textChunk"));
     }
 }

@@ -9,6 +9,7 @@ import backtype.storm.tuple.Tuple;
 import backtype.storm.tuple.Values;
 import com.texttalk.common.Utils;
 import com.texttalk.common.command.CommandExecutor;
+import com.texttalk.common.model.Message;
 import com.texttalk.core.transcriber.PSOLATranscriber;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -37,7 +38,8 @@ public class TextTranscriptionBolt extends BaseRichBolt {
 
     public void execute(Tuple tuple) {
 
-        String textChunk = tuple.getStringByField("textChunk");
+        Message msg = Message.getMessage(tuple.getStringByField("textChunk"));
+        String textChunk = msg.getText();
         String inputText = Utils.convertFromUTF8(textChunk, "Windows-1257");
         String transcribedText = "";
 
@@ -50,10 +52,13 @@ public class TextTranscriptionBolt extends BaseRichBolt {
             ByteArrayOutputStream error = new ByteArrayOutputStream();
 
             new PSOLATranscriber()
+                    .setSpeed(Integer.parseInt(msg.getSpeed()))
+                    .setTone(Integer.parseInt(msg.getTone()))
                     .setCmd(new CommandExecutor().setTimeoutSecs(timeout).setErrorStream(error))
                     .setPSOLATranscribeCmd(transcriberPath)
                     .setInputStream(in)
                     .setOutputStream(out)
+
                     .process();
 
             transcribedText = out.toString("UTF-8");
@@ -63,10 +68,12 @@ public class TextTranscriptionBolt extends BaseRichBolt {
             e.printStackTrace();
         }
 
-        this.collector.emit(new Values(textChunk, transcribedText));
+        msg.setTranscript(transcribedText);
+
+        this.collector.emit(msg.getSynth(), new Values(Message.getJSON(msg)));
     }
 
     public void declareOutputFields(OutputFieldsDeclarer declarer) {
-        declarer.declare(new Fields("textChunk", "transcribedText"));
+        declarer.declareStream("psola", new Fields("transcribedText"));
     }
 }
