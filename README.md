@@ -25,4 +25,4 @@ tail -f /usr/share/storm/logs/worker-6705.log -n 1000
 redis-cli
 
 ###Add text to be synthesized to Redis queue via CLI
-RPUSH text-to-speech {"id": "text1", "channel": "c1", "orderId": 0, "hashCode": "abcdefgh123456", "text": "message", "synth": "luss"}
+RPUSH text-to-speech '{"id": "text1", "channel": "c1", "orderId": 0, "hashCode": "abcdefgh123456", "text": "message", "synth": "luss"}'
