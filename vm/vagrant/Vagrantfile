@@ -18,7 +18,7 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
     vb.customize ["modifyvm", :id, "--memory", "1024", "--cpus", "2", "--ioapic", "on"]
   end
 
-  config.vm.network "public_network"
+  config.vm.network :public_network, bridge: "en0: Wi-Fi (AirPort)", :mac => "080027356f1a"
 
   config.vm.provision "puppet" do |puppet|
     puppet.hiera_config_path = "puppet/hiera.yaml"

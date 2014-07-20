@@ -17,7 +17,8 @@ public class TextToSpeechTopology {
     private static final String TEXT_SPOUT_ID = "text-spout";
     private static final String SPLIT_BOLT_ID = "split-bolt";
     private static final String TRANSCRIPTION_BOLT_ID = "transcription-bolt";
-    private static final String SYNTHESIS_BOLT_ID = "synthesis-bolt";
+    private static final String PSOLA_SYNTHESIS_BOLT_ID = "psola-synthesis-bolt";
+    private static final String LUSS_SYNTHESIS_BOLT_ID = "luss-synthesis-bolt";
     private static final String ENCODER_BOLT_ID = "encoder-bolt";
     private static final String TOPOLOGY_NAME = "text-to-speech-topology";
 
@@ -26,7 +27,8 @@ public class TextToSpeechTopology {
         RedisQueueSpout queueSpout = new RedisQueueSpout("redis", 6379, "text-to-speech");
         TextSplitterBolt splitBolt = new TextSplitterBolt();
         TextTranscriptionBolt transcriptionBolt = new TextTranscriptionBolt();
-        SpeechSynthesisBolt synthesisBolt = new SpeechSynthesisBolt();
+        PSOLASynthesisBolt psolaSynthesisBolt = new PSOLASynthesisBolt();
+        LUSSSynthesisBolt lussSynthesisBolt = new LUSSSynthesisBolt();
         MP3EncoderBolt encoderBolt = new MP3EncoderBolt();
 
         TopologyBuilder builder = new TopologyBuilder();
@@ -35,11 +37,13 @@ public class TextToSpeechTopology {
 
         builder.setBolt(SPLIT_BOLT_ID, splitBolt, 2).setNumTasks(4).noneGrouping(TEXT_SPOUT_ID);
 
-        builder.setBolt(TRANSCRIPTION_BOLT_ID, transcriptionBolt, 2).setNumTasks(2).fieldsGrouping(SPLIT_BOLT_ID, new Fields("textChunk"));
+        //builder.setBolt(TRANSCRIPTION_BOLT_ID, transcriptionBolt, 2).setNumTasks(2).fieldsGrouping(SPLIT_BOLT_ID, new Fields("textChunk"));
 
-        builder.setBolt(SYNTHESIS_BOLT_ID, synthesisBolt, 2).setNumTasks(2).globalGrouping(TRANSCRIPTION_BOLT_ID);
+        //builder.setBolt(PSOLA_SYNTHESIS_BOLT_ID, psolaSynthesisBolt, 2).setNumTasks(2).globalGrouping(TRANSCRIPTION_BOLT_ID);
 
-        builder.setBolt(ENCODER_BOLT_ID, encoderBolt, 2).setNumTasks(4).globalGrouping(SYNTHESIS_BOLT_ID);
+        builder.setBolt(LUSS_SYNTHESIS_BOLT_ID, lussSynthesisBolt, 2).setNumTasks(2).globalGrouping(SPLIT_BOLT_ID);
+
+        //builder.setBolt(ENCODER_BOLT_ID, encoderBolt, 2).setNumTasks(4).globalGrouping(LUSS_SYNTHESIS_BOLT_ID);
 
         if(args == null || args.length == 0) {
 
@@ -60,6 +64,11 @@ public class TextToSpeechTopology {
         Config config = new Config();
 
         config.put("splitTextLength", Settings.all.getInt("splitTextLength"));
+
+        config.put("synthesizers.luss.url", Settings.all.getString("synthesizers.luss.url"));
+        config.put("synthesizers.luss.protocol", Settings.all.getString("synthesizers.luss.protocol"));
+        config.put("synthesizers.luss.timeout", Settings.all.getInt("synthesizers.luss.timeout"));
+        config.put("synthesizers.luss.bitrate", Settings.all.getInt("synthesizers.luss.bitrate"));
 
         config.put("synthesizers.psola.execPath", Settings.all.getString("synthesizers.psola.execPath"));
         config.put("synthesizers.psola.voiceDbPath", Settings.all.getString("synthesizers.psola.voiceDbPath"));

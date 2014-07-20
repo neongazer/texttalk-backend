@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <module org.jetbrains.idea.maven.project.MavenProjectsManager.isMavenModule="true" type="JAVA_MODULE" version="4">
-  <component name="NewModuleRootManager" LANGUAGE_LEVEL="JDK_1_6" inherit-compiler-output="false">
+  <component name="NewModuleRootManager" LANGUAGE_LEVEL="JDK_1_7" inherit-compiler-output="false">
     <output url="file://$MODULE_DIR$/target/classes" />
     <output-test url="file://$MODULE_DIR$/target/test-classes" />
     <content url="file://$MODULE_DIR$">
@@ -72,9 +72,11 @@
     <orderEntry type="library" scope="PROVIDED" name="Maven: com.googlecode.disruptor:disruptor:2.10.1" level="project" />
     <orderEntry type="library" scope="PROVIDED" name="Maven: org.jgrapht:jgrapht-core:0.9.0" level="project" />
     <orderEntry type="library" scope="PROVIDED" name="Maven: org.slf4j:log4j-over-slf4j:1.6.6" level="project" />
-    <orderEntry type="library" scope="PROVIDED" name="Maven: io.netty:netty:3.6.3.Final" level="project" />
+    <orderEntry type="library" name="Maven: io.netty:netty:3.6.3.Final" level="project" />
     <orderEntry type="library" name="Maven: redis.clients:jedis:2.5.1" level="project" />
     <orderEntry type="library" name="Maven: org.apache.commons:commons-pool2:2.0" level="project" />
+    <orderEntry type="library" name="Maven: com.ning:async-http-client:1.8.12" level="project" />
+    <orderEntry type="library" name="Maven: javazoom:jlayer:1.0.1" level="project" />
   </component>
 </module>
 

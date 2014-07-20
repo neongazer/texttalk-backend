@@ -9,7 +9,6 @@ import backtype.storm.tuple.Tuple;
 import backtype.storm.tuple.Values;
 import com.texttalk.common.command.CommandExecutor;
 import com.texttalk.core.synthesizer.PSOLASynthesizer;
-import com.texttalk.core.transcriber.PSOLATranscriber;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -20,9 +19,9 @@ import java.util.*;
 /**
  * Created by Andrew on 15/06/2014.
  */
-public class SpeechSynthesisBolt extends BaseRichBolt {
+public class PSOLASynthesisBolt extends BaseRichBolt {
 
-    private static Logger logger = LoggerFactory.getLogger(SpeechSynthesisBolt.class);
+    private static Logger logger = LoggerFactory.getLogger(PSOLASynthesisBolt.class);
 
     private OutputCollector collector;
     private String synthesizerPath = "";
@@ -45,7 +44,7 @@ public class SpeechSynthesisBolt extends BaseRichBolt {
         ByteArrayOutputStream out = new ByteArrayOutputStream();
         ByteArrayOutputStream error = new ByteArrayOutputStream();
 
-        logger.info("Running Synthesis bolt...");
+        logger.info("Running PSOLA Synthesis bolt...");
 
         try {
 
