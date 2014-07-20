@@ -4,8 +4,7 @@ import com.ning.http.client.AsyncHttpClient;
 import com.ning.http.client.AsyncHttpClientConfig;
 import com.ning.http.client.websocket.*;
 import com.texttalk.common.Utils;
-import com.texttalk.common.io.CloseAwareFileOutputStream;
-import com.texttalk.common.io.FilePath;
+import com.texttalk.common.io.CloseableFileOutputStream;
 import com.texttalk.common.processor.Processor;
 import com.texttalk.common.processor.ProcessorBase;
 import org.apache.commons.io.IOUtils;
@@ -14,7 +13,6 @@ import org.slf4j.LoggerFactory;
 
 import java.io.File;
 import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
 import java.io.IOException;
 import java.util.concurrent.TimeUnit;
 
@@ -31,7 +29,7 @@ public class LUSSSynthesizer extends ProcessorBase implements Processor {
     final private String protocol;
     final private long timeout;
     private int mp3BufferSize = 0;
-    private CloseAwareFileOutputStream fileOutputStream;
+    private CloseableFileOutputStream fileOutputStream;
 
     public LUSSSynthesizer(String url, String protocol, long timeout, int kbps) {
 
@@ -46,7 +44,7 @@ public class LUSSSynthesizer extends ProcessorBase implements Processor {
 
         try {
             super.setOutputFile(file);
-            fileOutputStream = new CloseAwareFileOutputStream(file);
+            fileOutputStream = new CloseableFileOutputStream(file);
             websocket = getWebsocket();
         } catch (FileNotFoundException e) {
             logger.error(e.getMessage());
