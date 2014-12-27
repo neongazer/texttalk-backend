@@ -15,7 +15,7 @@ import java.util.UUID;
 
 public class LUSSSynthesizerTest {
 
-    private LUSSSynthesizer synthesizer = new LUSSSynthesizer("ws://192.168.1.10:9000", "dumb-increment-protocol", 5, 32);
+    private LUSSSynthesizer synthesizer = new LUSSSynthesizer("ws://xeon.host.tele1.co:59000", "dumb-increment-protocol", 5, 32);
 
     @BeforeMethod
     public void setUp() throws Exception {
@@ -93,13 +93,13 @@ public class LUSSSynthesizerTest {
         File outputFile = new File(resultTempPath + "/" + UUID.randomUUID().toString() + ".mp3");
         BufferedInputStream in = new BufferedInputStream(new ByteArrayInputStream(
                 new String(
-                        "987654321"
+                        "viso gero"
                 ).getBytes("UTF-8")
         ));
 
         synthesizer.setInputStream(in).setOutputFile(outputFile).process();
 
-        Assert.assertEquals(outputFile.length(), 26018);
+        Assert.assertEquals(outputFile.length(), 3657);
 
         new MP3(outputFile).play();
     }

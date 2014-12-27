@@ -40,16 +40,20 @@ public class RedisQueueSpout extends BaseRichSpout {
     /** The port at which Redis may be found. */
     private final int            port;
 
+    /** Password **/
+    private String password;
+
     /** The "pattern" i.e. root key below which all messages are stored. */
     private final String         pattern;
 
     /** JedisQueue instance. Transient as its inner Jedis member cannot be serialized. */
     private transient JedisQueue jq;
 
-    public RedisQueueSpout(String host, int port, String pattern) {
+    public RedisQueueSpout(String host, int port, String password, String pattern) {
         this.host = host;
         this.port = port;
         this.pattern = pattern;
+        this.password = password;
     }
 
     @SuppressWarnings("rawtypes")
@@ -57,6 +61,7 @@ public class RedisQueueSpout extends BaseRichSpout {
         _collector = collector;
         Jedis newJedis = new Jedis(host, port);
         newJedis.connect();
+        newJedis.auth(password);
         this.jq = new JedisQueue(newJedis, pattern);
     }
 

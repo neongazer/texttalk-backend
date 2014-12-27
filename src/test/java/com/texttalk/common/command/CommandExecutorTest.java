@@ -95,13 +95,13 @@ public class CommandExecutorTest {
         assertTrue(commandTimeDiff >= 2 && commandTimeDiff < 3, "Command should have been running for 2 secs and then timed out");
     }
 
-    @Test
+    @Test(enabled = false)
     public void testTimeoutCommandWithKilling() throws CommandException {
 
         logger.debug("Executing: " + delayCmd);
         // Should throw time out exception and kill command
         try {
-            new CommandExecutor().execute(delayCmd, 1, 1, killDelayedCmd);
+            new CommandExecutor().execute(delayCmd, 2, 1, killDelayedCmd);
         } catch(CommandTimeoutException e) {
             // Check if ping is still running
             String output = new CommandExecutor().execute(listProcsCmd).toString();

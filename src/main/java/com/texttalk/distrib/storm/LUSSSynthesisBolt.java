@@ -12,10 +12,13 @@ import com.google.common.hash.Hashing;
 import com.texttalk.common.Utils;
 import com.texttalk.common.model.Message;
 import com.texttalk.core.synthesizer.LUSSSynthesizer;
+import com.texttalk.distrib.storm.queue.JedisQueue;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import redis.clients.jedis.Jedis;
 
 import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.util.*;
 
@@ -34,6 +37,7 @@ public class LUSSSynthesisBolt extends BaseRichBolt {
     private Integer bitrate = 0;
     private String voicePath = "";
     private LUSSSynthesizer synthesizer;
+    private JedisQueue jq = null;
 
     public void prepare(Map config, TopologyContext context, OutputCollector collector) {
 
@@ -45,6 +49,11 @@ public class LUSSSynthesisBolt extends BaseRichBolt {
         bitrate = ((Long)config.get("synthesizers.luss.bitrate")).intValue();
         voicePath = (String)config.get("voicePath");
         synthesizer = new LUSSSynthesizer(synthesizerURL, synthesizerProtocol, timeout, bitrate);
+
+        Jedis newJedis = new Jedis(config.get("redis.host").toString(), Integer.parseInt(config.get("redis.port").toString()));
+        newJedis.connect();
+        newJedis.auth(config.get("redis.password").toString());
+        this.jq = new JedisQueue(newJedis, config.get("redis.pattern").toString());
 
     }
 
@@ -62,7 +71,9 @@ public class LUSSSynthesisBolt extends BaseRichBolt {
         try {
 
             ByteArrayInputStream in = new ByteArrayInputStream(msg.getText().getBytes("UTF-8"));
-            synthesizer.setInputStream(in).setOutputFile(mp3File).process();
+            ByteArrayOutputStream out = new ByteArrayOutputStream();
+            synthesizer.setInputStream(in).setOutputStream(out).process();
+            this.jq.set(msg.getHashCode(), Base64.getEncoder().encodeToString(out.toByteArray()));
 
         } catch(Exception e) {
             // TODO: deal with exception

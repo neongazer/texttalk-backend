@@ -24,7 +24,12 @@ public class TextToSpeechTopology {
 
     public static void main(String[] args) throws Exception {
 
-        RedisQueueSpout queueSpout = new RedisQueueSpout("redis", 6379, "text-to-speech");
+        RedisQueueSpout queueSpout = new RedisQueueSpout(
+                Settings.all.getString("redis.host"),
+                Settings.all.getInt("redis.port"),
+                Settings.all.getString("redis.password"),
+                Settings.all.getString("redis.pattern")
+        );
         TextSplitterBolt splitBolt = new TextSplitterBolt();
         TextTranscriptionBolt transcriptionBolt = new TextTranscriptionBolt();
         PSOLASynthesisBolt psolaSynthesisBolt = new PSOLASynthesisBolt();
@@ -79,6 +84,11 @@ public class TextToSpeechTopology {
         config.put("encoders.lame.timeout", Settings.all.getInt("encoders.lame.timeout"));
 
         config.put("voicePath", Settings.all.getString("voicePath"));
+
+        config.put("redis.host", Settings.all.getString("redis.host"));
+        config.put("redis.port", Settings.all.getInt("redis.port"));
+        config.put("redis.password", Settings.all.getString("redis.password"));
+        config.put("redis.pattern", Settings.all.getString("redis.pattern"));
 
         return config;
     }
