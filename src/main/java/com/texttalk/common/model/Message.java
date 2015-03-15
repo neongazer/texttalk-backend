@@ -24,6 +24,19 @@ public class Message {
     private String tone = "0";
     private String speed = "0";
     private Integer totalChunks = 0;
+    private String voiceTrack = "";
+
+    public void setVoiceTrack(String v) {
+        voiceTrack = v;
+    }
+
+    public void setVoiceTrack(byte[] bytes) {
+        voiceTrack = org.apache.commons.codec.binary.Base64.encodeBase64String(bytes);
+    }
+
+    public String getVoiceTrack() {
+        return voiceTrack;
+    }
 
     public void setTotalChunks(int total) {
         totalChunks = total;

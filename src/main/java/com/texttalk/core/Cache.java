@@ -32,11 +32,11 @@ public class Cache {
 
     }
 
-    public void storeSpeech(String key, ByteArrayOutputStream out, String txt) {
+    public void storeSpeech(String key, String base64VoiceTrack, String txt) {
 
         jedis.set(
                 key,
-                org.apache.commons.codec.binary.Base64.encodeBase64String(out.toByteArray())
+                base64VoiceTrack
         );
 
         jedis.set(
@@ -63,6 +63,7 @@ public class Cache {
         json.put("hashCode", msg.getHashCode());
         json.put("orderId", msg.getOrderId());
         json.put("totalChunks", msg.getTotalChunks());
+        json.put("voiceTrack", msg.getVoiceTrack());
 
         jedis.publish(channel, json.toJSONString());
 

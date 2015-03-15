@@ -80,13 +80,15 @@ public class LUSSSynthesisBolt extends BaseRichBolt {
             synthesizer.setOutputStream(out);
             synthesizer.process();
 
+            msg.setVoiceTrack(out.toByteArray());
+
             // Keep speech data inside the redis cache with the key: tts:out:${hashCode}
-            cache.storeSpeech(outQueueName + ":" + msg.getHashCode(), out, msg.getText());
+            cache.storeSpeech(outQueueName + ":" + msg.getHashCode(), msg.getVoiceTrack(), msg.getText());
 
             // Keep text chunks links as a set. Each text is split into chunks, which are saved with their order.  Key: tts:out:links:${originalTextHashCode}
             cache.linkSpeech(outQueueName + ":links:" + msg.getParentHashCode(), msg.getOrderId() + ":" + msg.getHashCode());
 
-            // Let consumer know that the speech synthesis of this text chunk is accomplished
+            // Let consumer send back the voice track for playback
             cache.notify(msg.getChannel(), msg);
 
         } catch(Exception e) {
