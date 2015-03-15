@@ -32,7 +32,7 @@ public class Cache {
 
     }
 
-    public void storeSpeech(String key, ByteArrayOutputStream out) {
+    public void storeSpeech(String key, ByteArrayOutputStream out, String txt) {
 
         jedis.set(
                 key,
@@ -41,7 +41,7 @@ public class Cache {
 
         jedis.set(
                 key + ":txt",
-                org.apache.commons.codec.binary.Base64.encodeBase64String(out.toByteArray())
+                txt
         );
 
         logger.info("------> storing speech: " + key);
