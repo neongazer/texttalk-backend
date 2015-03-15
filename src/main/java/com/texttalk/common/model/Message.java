@@ -23,6 +23,15 @@ public class Message {
     private String voice = "";
     private String tone = "0";
     private String speed = "0";
+    private Integer totalChunks = 0;
+
+    public void setTotalChunks(int total) {
+        totalChunks = total;
+    }
+
+    public Integer getTotalChunks() {
+        return totalChunks;
+    }
 
     public String computeHashCode() {
 

@@ -62,7 +62,7 @@ public class Cache {
         json.put("parentHashCode", msg.getParentHashCode());
         json.put("hashCode", msg.getHashCode());
         json.put("orderId", msg.getOrderId());
-        json.put("voiceFile", msg.getVoiceFile());
+        json.put("totalChunks", msg.getTotalChunks());
 
         jedis.publish(channel, json.toJSONString());
 

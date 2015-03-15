@@ -50,6 +50,7 @@ public class TextSplitterBolt extends BaseRichBolt {
             newMsg.setParentHashCode(newMsg.computeParentHashCode(msg.getText()));
             newMsg.setHashCode(newMsg.computeHashCode());
             newMsg.setOrderId(orderId);
+            newMsg.setTotalChunks(splitText.size());
 
             orderId++;
 
