@@ -4,6 +4,7 @@ import com.ning.http.client.AsyncHttpClient;
 import com.ning.http.client.AsyncHttpClientConfig;
 import com.ning.http.client.websocket.*;
 import com.texttalk.common.Utils;
+import com.texttalk.common.io.CloseableByteArrayOutputStream;
 import com.texttalk.common.io.CloseableFileOutputStream;
 import com.texttalk.common.processor.Processor;
 import com.texttalk.common.processor.ProcessorBase;
@@ -29,6 +30,7 @@ public class LUSSSynthesizer extends ProcessorBase implements Processor {
     final private String protocol;
     final private long timeout;
     private int mp3BufferSize = 0;
+    private CloseableByteArrayOutputStream outputStream;
     private CloseableFileOutputStream fileOutputStream;
 
     public LUSSSynthesizer(String url, String protocol, long timeout, int kbps) {
@@ -53,6 +55,15 @@ public class LUSSSynthesizer extends ProcessorBase implements Processor {
         return this;
     }
 
+    public LUSSSynthesizer setOutputStream(CloseableByteArrayOutputStream outputSteam) {
+
+        super.setOutputStream(outputSteam);
+        this.outputStream = outputSteam;
+        websocket = getWebsocket();
+
+        return this;
+    }
+
     //TODO: This synthesizer currently only supports byte input stream and file output stream
     @Override
     public Processor process() throws IOException {
@@ -64,15 +75,20 @@ public class LUSSSynthesizer extends ProcessorBase implements Processor {
 
         getWebsocket().sendMessage(IOUtils.toByteArray(inputStream));
 
-        int fileCheckCounts = 0;
+        int checkCounts = 0;
 
         logger.debug("Waiting for file to be created...");
 
         //TODO: find a better way to retrieve output
-        //Check until enough data has been written to the file: outputFile.length() > bufferSize
-        while(fileCheckCounts < timeout) {
-            if(fileOutputStream.isClosed()) break;
-            fileCheckCounts += 50;
+        //Check until stream is closed
+        while(checkCounts < timeout) {
+            if(outputStream != null) {
+                if (outputStream.isClosed()) break;
+            } else if(outputFile != null) {
+                if (fileOutputStream.isClosed()) break;
+            }
+
+            checkCounts += 50;
             Utils.waitForMillis(50);
         }
 
@@ -113,8 +129,13 @@ public class LUSSSynthesizer extends ProcessorBase implements Processor {
                                                     logger.debug("Received message from: " + url);
 
                                                     try {
-                                                        fileOutputStream.write(message);
-                                                        fileOutputStream.close();
+                                                        if (outputStream != null) {
+                                                            outputStream.write(message);
+                                                            outputStream.close();
+                                                        } else if (fileOutputStream != null) {
+                                                            fileOutputStream.write(message);
+                                                            fileOutputStream.close();
+                                                        }
                                                     } catch (Exception e) {
                                                         logger.error("Error while writing data stream to a file from: " + url);
                                                     }

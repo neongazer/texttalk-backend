@@ -3,6 +3,7 @@ package com.texttalk.distrib.storm.queue;
 import java.util.List;
 import java.util.Map;
 
+import com.texttalk.common.JedisFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import redis.clients.jedis.Jedis;
@@ -59,10 +60,10 @@ public class RedisQueueSpout extends BaseRichSpout {
     @SuppressWarnings("rawtypes")
     public void open(Map conf, TopologyContext context, SpoutOutputCollector collector) {
         _collector = collector;
-        Jedis newJedis = new Jedis(host, port);
-        newJedis.connect();
-        newJedis.auth(password);
-        this.jq = new JedisQueue(newJedis, pattern);
+
+        JedisFactory.setConnectionSettings(host, port, password);
+
+        this.jq = new JedisQueue(JedisFactory.getRes(), pattern);
     }
 
     public void close() {

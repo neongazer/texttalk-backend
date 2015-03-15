@@ -9,10 +9,14 @@ import backtype.storm.tuple.Tuple;
 import backtype.storm.tuple.Values;
 import com.google.common.base.Charsets;
 import com.google.common.hash.Hashing;
+import com.texttalk.common.JedisFactory;
 import com.texttalk.common.Utils;
+import com.texttalk.common.io.CloseableByteArrayOutputStream;
 import com.texttalk.common.model.Message;
+import com.texttalk.core.Cache;
 import com.texttalk.core.synthesizer.LUSSSynthesizer;
 import com.texttalk.distrib.storm.queue.JedisQueue;
+import org.apache.commons.codec.binary.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import redis.clients.jedis.Jedis;
@@ -37,7 +41,8 @@ public class LUSSSynthesisBolt extends BaseRichBolt {
     private Integer bitrate = 0;
     private String voicePath = "";
     private LUSSSynthesizer synthesizer;
-    private JedisQueue jq = null;
+    private String outQueueName = "";
+    private Cache cache = null;
 
     public void prepare(Map config, TopologyContext context, OutputCollector collector) {
 
@@ -49,11 +54,9 @@ public class LUSSSynthesisBolt extends BaseRichBolt {
         bitrate = ((Long)config.get("synthesizers.luss.bitrate")).intValue();
         voicePath = (String)config.get("voicePath");
         synthesizer = new LUSSSynthesizer(synthesizerURL, synthesizerProtocol, timeout, bitrate);
+        outQueueName = config.get("redis.outgoingQueue").toString();
 
-        Jedis newJedis = new Jedis(config.get("redis.host").toString(), Integer.parseInt(config.get("redis.port").toString()));
-        newJedis.connect();
-        newJedis.auth(config.get("redis.password").toString());
-        this.jq = new JedisQueue(newJedis, config.get("redis.pattern").toString());
+        cache = new Cache(config);
 
     }
 
@@ -71,9 +74,20 @@ public class LUSSSynthesisBolt extends BaseRichBolt {
         try {
 
             ByteArrayInputStream in = new ByteArrayInputStream(msg.getText().getBytes("UTF-8"));
-            ByteArrayOutputStream out = new ByteArrayOutputStream();
-            synthesizer.setInputStream(in).setOutputStream(out).process();
-            this.jq.set(msg.getHashCode(), Base64.getEncoder().encodeToString(out.toByteArray()));
+            CloseableByteArrayOutputStream out = new CloseableByteArrayOutputStream();
+
+            synthesizer.setInputStream(in);
+            synthesizer.setOutputStream(out);
+            synthesizer.process();
+
+            // Keep speech data inside the redis cache with the key: tts:out:${hashCode}
+            cache.storeSpeech(outQueueName + ":" + msg.getHashCode(), out);
+
+            // Keep text chunks links as a set. Each text is split into chunks, which are saved with their order.  Key: tts:out:links:${originalTextHashCode}
+            cache.linkSpeech(outQueueName + ":links:" + msg.getParentHashCode(), msg.getOrderId() + ":" + msg.getHashCode());
+
+            // Let consumer know that the speech synthesis of this text chunk is accomplished
+            cache.notify(msg.getChannel(), msg);
 
         } catch(Exception e) {
             // TODO: deal with exception

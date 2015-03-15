@@ -14,6 +14,7 @@ import com.texttalk.core.TextSplitter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.util.Calendar;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -40,12 +41,17 @@ public class TextSplitterBolt extends BaseRichBolt {
         Message msg = Message.getMessage(tuple.getStringByField("message"));
 
         List<String> splitText = TextSplitter.splitText( msg.getText(), maxTextLength );
+        int orderId = 0;
 
         for(String text : splitText){
 
             Message newMsg = Message.getMessage(tuple.getStringByField("message"));
             newMsg.setText(text);
+            newMsg.setParentHashCode(newMsg.computeParentHashCode(msg.getText()));
             newMsg.setHashCode(newMsg.computeHashCode());
+            newMsg.setOrderId(orderId);
+
+            orderId++;
 
             this.collector.emit( newMsg.getSynth(), new Values(Message.getJSON(newMsg)) );
         }

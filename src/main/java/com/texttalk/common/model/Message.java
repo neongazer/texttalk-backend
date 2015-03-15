@@ -15,6 +15,7 @@ public class Message {
     private String channel = "";
     private int orderId = 0;
     private String hashCode = "";
+    private String parentHashCode = "";
     private String text = "";
     private String transcript = "";
     private String voiceFile = "";
@@ -26,6 +27,11 @@ public class Message {
     public String computeHashCode() {
 
         return Utils.getMD5(text + synth + voice + tone + speed);
+    }
+
+    public String computeParentHashCode(String allText) {
+
+        return Utils.getMD5(allText + synth + voice + tone + speed);
     }
 
     public static Message getMessage(String json) {
@@ -60,6 +66,14 @@ public class Message {
 
     public void setHashCode(String hashCode) {
         this.hashCode = hashCode;
+    }
+
+    public void setParentHashCode(String parentHashCode) {
+        this.parentHashCode = parentHashCode;
+    }
+
+    public String getParentHashCode() {
+        return parentHashCode;
     }
 
     public String getText() {

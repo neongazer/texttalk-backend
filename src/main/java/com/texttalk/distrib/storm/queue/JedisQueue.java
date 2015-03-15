@@ -67,14 +67,6 @@ public class JedisQueue {
         this.jedis.rpush(this.pattern, elems);
     }
 
-    public void set(String key, String value) {
-        this.jedis.set(key, value);
-    }
-
-    public String get(String key) {
-        return this.jedis.get(key);
-    }
-
     /**
      * @return the next item in the queue, popped
      *

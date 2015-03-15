@@ -28,7 +28,7 @@ public class TextToSpeechTopology {
                 Settings.all.getString("redis.host"),
                 Settings.all.getInt("redis.port"),
                 Settings.all.getString("redis.password"),
-                Settings.all.getString("redis.pattern")
+                Settings.all.getString("redis.incomingQueue")
         );
         TextSplitterBolt splitBolt = new TextSplitterBolt();
         TextTranscriptionBolt transcriptionBolt = new TextTranscriptionBolt();
@@ -88,7 +88,8 @@ public class TextToSpeechTopology {
         config.put("redis.host", Settings.all.getString("redis.host"));
         config.put("redis.port", Settings.all.getInt("redis.port"));
         config.put("redis.password", Settings.all.getString("redis.password"));
-        config.put("redis.pattern", Settings.all.getString("redis.pattern"));
+        config.put("redis.incomingQueue", Settings.all.getString("redis.incomingQueue"));
+        config.put("redis.outgoingQueue", Settings.all.getString("redis.outgoingQueue"));
 
         return config;
     }

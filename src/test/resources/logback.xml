@@ -25,9 +25,9 @@
 
 	</appender>
 
-	<logger name="com.texttalk.core" level="trace" />
+	<logger name="com.texttalk.core" level="info" />
 
-	<root level="TRACE">
+	<root level="INFO">
 		<appender-ref ref="FILE" />
 		<appender-ref ref="STDOUT" />
 	</root>
