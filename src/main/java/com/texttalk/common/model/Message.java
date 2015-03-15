@@ -26,10 +26,6 @@ public class Message {
     private Integer totalChunks = 0;
     private String voiceTrack = "";
 
-    public void setVoiceTrack(String v) {
-        voiceTrack = v;
-    }
-
     public void setVoiceTrack(byte[] bytes) {
         voiceTrack = org.apache.commons.codec.binary.Base64.encodeBase64String(bytes);
     }
@@ -60,6 +56,8 @@ public class Message {
         try {
             return new ObjectMapper().readValue(json, Message.class);
         } catch (IOException e) {
+            // TODO: deal with exceptions
+            e.printStackTrace();
             return new Message();
         }
     }
@@ -70,6 +68,7 @@ public class Message {
             new ObjectMapper().writeValue(json, msg);
             return json.toString();
         } catch(IOException e) {
+            // TODO: deal with exceptions
             return "";
         }
     }

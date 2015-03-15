@@ -26,14 +26,14 @@ public class MessageTest {
     @Test
     public void testGetMessage() throws Exception {
 
-        String json = "{\"id\": \"text1\", \"channel\": \"c1\", \"orderId\": 0, \"hashCode\": \"abcdefgh123456\", \"text\": \"labas ir visogero\", \"synth\": \"luss\"}";
+        String json = "{\"id\": \"text1\", \"channel\": \"c1\", \"orderId\": 0, \"hashCode\": \"abcdefgh123456\", \"text\": \"labas ir visogero\", \"synth\": \"luss\", \"totalChunks\": 0, \"voiceTrack\": \"\"}";
         Message msg = Message.getMessage(json);
 
-        logger.debug("text: " + msg.getText());
+        logger.info("text: " + msg.getText());
+        logger.info("JSON: " + Message.getJSON(msg));
 
         Assert.assertEquals("labas ir visogero", msg.getText());
 
-        logger.debug(Message.getJSON(msg));
     }
 
     @Test
